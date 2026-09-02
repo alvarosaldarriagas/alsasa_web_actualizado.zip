@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  --primary: #0D47A1;
+  --secondary: #E67E22;
+  --background: #FAFAFA;
+  --surface: #FFFFFF;
+  --text: #2C3E50;
+  --text-light: #546E7A;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  color: var(--primary);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+}
+
+/* Estilos de Respuesta Móvil (Media Queries) */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 4rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid #eaeaea;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-links,
+.nav-actions {
+  display: flex;
+}
+
+.hamburger {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary);
+}
+
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.hero-title {
+  font-size: 2.2rem !important;
+}
+
+.gallery-img:hover {
+  transform: scale(1.03);
+}
+
+@media (min-width: 768px) {
+  .responsive-grid.two-cols {
+    grid-template-columns: 2.5fr 1fr;
+  }
+
+  .responsive-grid.two-cols-even {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero-title {
+    font-size: 3.8rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 1rem 1.5rem;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-actions {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-padding {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  /* ----- HOME PAGE ----- */
+  .home-hero {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .home-hero h1 {
+    font-size: 2.2rem !important;
+  }
+
+  .home-catalog {
+    padding: 3rem 1.5rem !important;
+  }
+
+  /* ----- BLOG LISTING ----- */
+  .blog-header {
+    padding: 4rem 1.5rem 2.5rem !important;
+  }
+
+  .blog-header h1 {
+    font-size: 2.2rem !important;
+  }
+
+  .blog-grid-section {
+    padding: 3rem 1.5rem !important;
+  }
+
+  /* ----- BLOG POST DETAIL ----- */
+  .blog-article-card {
+    padding: 2rem 1.5rem !important;
+    margin: -3rem 1rem 3rem !important;
+  }
+
+  .blog-article-card h1 {
+    font-size: 1.8rem !important;
+  }
+
+  /* ----- ABOUT / NOSOTROS ----- */
+  .about-hero {
+    padding: 5rem 1.5rem !important;
+  }
+
+  .about-hero h1 {
+    font-size: 2.5rem !important;
+  }
+
+  .about-content-section {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: 3rem !important;
+  }
+
+  .about-image-container {
+    height: 300px !important;
+  }
+
+  .about-floating-card {
+    position: relative !important;
+    bottom: auto !important;
+    right: auto !important;
+    margin-top: -2rem;
+    text-align: center;
+  }
+
+  .about-values-section {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .about-cta-section {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .about-cta-section h2 {
+    font-size: 2rem !important;
+  }
+
+  /* ----- PROPERTY DETAIL ----- */
+  .property-hero {
+    height: 45vh !important;
+    min-height: 280px !important;
+  }
+
+  .property-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* ----- FOOTER ----- */
+  .site-footer {
+    padding: 2rem 1.5rem !important;
+  }
+}
