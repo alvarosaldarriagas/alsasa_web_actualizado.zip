@@ -1,0 +1,46 @@
+name: Extract ALSASA source for Vercel preview
+
+on:
+  push:
+    branches:
+      - vercel-integration-check-2026-09-02
+    paths:
+      - .github/workflows/extract-alsasa-source.yml
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out test branch
+        uses: actions/checkout@v4
+        with:
+          ref: vercel-integration-check-2026-09-02
+
+      - name: Extract safe source directories
+        shell: bash
+        run: |
+          work_dir="$(mktemp -d)"
+          unzip -q alsasa_web_actualizado.zip -d "$work_dir"
+          for dir in app components public lib; do
+            test -d "$work_dir/$dir"
+            cp -R "$work_dir/$dir" .
+          done
+          test ! -e .env.local
+          test ! -d .vercel
+
+      - name: Commit extracted source
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app components public lib
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
+          git commit -m "fix: extract app source for Vercel preview"
+          git push origin HEAD:vercel-integration-check-2026-09-02
