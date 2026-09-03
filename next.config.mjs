@@ -15,6 +15,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'alsasa.co' },
       { protocol: 'https', hostname: 'www.alsasa.co' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'base44.app' },
       { protocol: 'https', hostname: '**.base44.app' },
     ],
   },
