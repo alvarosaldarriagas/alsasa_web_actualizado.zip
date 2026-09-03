@@ -62,19 +62,24 @@ export default async function Home() {
             <p style={{ color: 'var(--text-light)', fontSize: '1.1rem' }}>Déjanos tus datos y un especialista de Alsasa Inmobiliaria se comunicará contigo a la mayor brevedad posible.</p>
           </div>
 
-          <form action="https://formsubmit.co/info@alsasa.co" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <input type="hidden" name="_subject" value="Nuevo Contacto desde la Página de Inicio (Alsasa Web)" />
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_next" value="https://alsasa-web.vercel.app/" />
+          <form action="/api/leads" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <input type="hidden" name="source" value="web_home" />
+              <input type="hidden" name="lead_type" value="contacto_general" />
+              <input type="text" name="website" tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-                  <input type="text" name="name" placeholder="Nombre completo *" required style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
+                  <input type="text" name="full_name" placeholder="Nombre completo *" required style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
                   <input type="tel" name="phone" placeholder="Teléfono / Celular *" required style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
               </div>
               
-              <input type="email" name="email" placeholder="Correo electrónico" style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
+              <input type="email" name="email" placeholder="Correo electrónico *" required style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
               
               <textarea name="message" placeholder="¿En qué te podemos ayudar? (Opcional)" rows="4" style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb', resize: 'vertical' }}></textarea>
+              
+              <label style={{ display: 'flex', gap: '0.7rem', alignItems: 'flex-start', color: 'var(--text-light)', fontSize: '0.88rem', lineHeight: 1.5 }}>
+                  <input type="checkbox" name="consent" required style={{ marginTop: '0.25rem' }} />
+                  Autorizo a ALSASA Inmobiliaria a tratar mis datos para responder esta solicitud.
+              </label>
               
               <button type="submit" style={{ backgroundColor: 'var(--secondary)', color: 'white', padding: '1.2rem', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', border: 'none', transition: 'transform 0.2s', boxShadow: '0 4px 14px rgba(230, 126, 34, 0.3)', marginTop: '0.5rem' }}>
                   Enviar Mensaje

@@ -139,12 +139,18 @@ export default async function PropertyPage({ params }) {
                         <h3 style={{ fontSize: '1.6rem', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)' }}>¿Te interesa esta propiedad?</h3>
                         <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '0.95rem' }}>Deja tus datos y un agente especialista de Alsasa te contactará al instante.</p>
 
-                        <form action="https://formsubmit.co/info@alsasa.co" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                            <input type="hidden" name="_subject" value={`Nuevo Lead Inmobiliario: ${property.title}`} />
-                            <input type="hidden" name="_captcha" value="false" />
-                            <input type="text" name="name" placeholder="Nombre completo *" style={{ padding: '1.1rem', borderRadius: '6px', border: 'none', fontSize: '1rem', outline: 'none', color: '#333' }} required />
+                        <form action="/api/leads" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                            <input type="hidden" name="source" value="web_property" />
+                            <input type="hidden" name="lead_type" value="interes_propiedad" />
+                            <input type="hidden" name="property_id" value={property.base44Id || property.id} />
+                            <input type="text" name="website" tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
+                            <input type="text" name="full_name" placeholder="Nombre completo *" style={{ padding: '1.1rem', borderRadius: '6px', border: 'none', fontSize: '1rem', outline: 'none', color: '#333' }} required />
                             <input type="tel" name="phone" placeholder="Tu número de teléfono *" style={{ padding: '1.1rem', borderRadius: '6px', border: 'none', fontSize: '1rem', outline: 'none', color: '#333' }} required />
-                            <input type="email" name="email" placeholder="Correo electrónico" style={{ padding: '1.1rem', borderRadius: '6px', border: 'none', fontSize: '1rem', outline: 'none', color: '#333' }} />
+                            <input type="email" name="email" placeholder="Correo electrónico *" required style={{ padding: '1.1rem', borderRadius: '6px', border: 'none', fontSize: '1rem', outline: 'none', color: '#333' }} />
+                            <label style={{ display: 'flex', gap: '0.7rem', alignItems: 'flex-start', color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                                <input type="checkbox" name="consent" required style={{ marginTop: '0.25rem' }} />
+                                Autorizo a ALSASA Inmobiliaria a tratar mis datos para responder esta solicitud.
+                            </label>
                             <button type="submit" style={{ backgroundColor: 'var(--secondary)', color: 'white', padding: '1.2rem', borderRadius: '6px', fontSize: '1.1rem', fontWeight: 'bold', marginTop: '0.5rem', cursor: 'pointer', border: 'none', transition: 'transform 0.2s', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
                                 Enviar Consulta a Alsasa
                             </button>
