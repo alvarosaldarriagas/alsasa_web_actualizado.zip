@@ -8,13 +8,18 @@ export async function generateMetadata({ params }) {
 
     if (!property) return { title: 'Propiedad no encontrada | Alsasa Inmobiliaria' };
 
+    const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
+
     return {
         title: `${property.title} | Propiedades Alsasa`,
-        description: `Espectacular propiedad en ${property.location}. Precio: $${property.price}. Área: ${property.area} m², ${property.beds} habitaciones, ${property.baths} baños. Contacta a Alsasa Inmobiliaria.`,
+        description: `Espectacular propiedad en ${property.location}. Precio: ${property.price}. Área: ${property.area} m², ${property.beds} habitaciones, ${property.baths} baños. Contacta a Alsasa Inmobiliaria.`,
+        alternates: {
+            canonical: canonicalUrl,
+        },
         openGraph: {
             title: `${property.title} - ${property.action && property.action !== 'Consultar' ? property.action : 'En Venta'}`,
             description: `Propiedad disponible en ${property.location}. Conoce más destalles de esta increíble opción de ${property.area} m² por $${property.price}.`,
-            url: `https://www.alsasa.co/propiedad/${id}`,
+            url: canonicalUrl,
             images: property.image ? [{ url: property.image, width: 1200, height: 630, alt: property.title }] : [],
         },
         twitter: {
@@ -29,6 +34,7 @@ export async function generateMetadata({ params }) {
 export default async function PropertyPage({ params }) {
     const { id } = await params;
     const property = await getPropertyById(id);
+    const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
 
     if (!property) {
         return (
@@ -56,7 +62,7 @@ export default async function PropertyPage({ params }) {
                         "@type": "RealEstateListing",
                         "name": property.title,
                         "description": property.content?.replace(/<[^>]*>?/gm, '').substring(0, 160) || '',
-                        "url": `https://www.alsasa.co/propiedad/${id}`,
+                        "url": canonicalUrl,
                         "image": property.image,
                         "offers": {
                             "@type": "Offer",
