@@ -1,7 +1,7 @@
 import { getProperties, getPosts } from "@/lib/wp-api";
 
 export default async function sitemap() {
-  const baseUrl = 'https://alsasa-web.vercel.app';
+  const baseUrl = 'https://alsasa.co';
 
   // Rutas estáticas principales
   const routes = [

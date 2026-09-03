@@ -3,6 +3,68 @@ import { NextResponse } from 'next/server';
 import { getProperties } from '@/lib/wp-api';
 import { submitLeadToBase44 } from '@/lib/base44-leads';
 
+const chatAttempts = new Map();
+const CHAT_WINDOW_MS = 10 * 60 * 1000;
+const MAX_CHAT_ATTEMPTS = 30;
+const MAX_MESSAGES = 20;
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_CONVERSATION_LENGTH = 8000;
+
+function isAllowedOrigin(request) {
+    const origin = request.headers.get('origin');
+    if (!origin) return false;
+
+    try {
+        const { hostname } = new URL(origin);
+        return (
+            hostname === 'alsasa.co' ||
+            hostname === 'www.alsasa.co' ||
+            /^alsasa-[a-z0-9-]+-alvaro-sanchezs-projects-85f656ac\.vercel\.app$/.test(hostname)
+        );
+    } catch {
+        return false;
+    }
+}
+
+function isRateLimited(request) {
+    const forwarded = request.headers.get('x-forwarded-for') || '';
+    const ip = forwarded.split(',')[0].trim() || 'unknown';
+    const now = Date.now();
+    const recent = (chatAttempts.get(ip) || []).filter(
+        (time) => now - time < CHAT_WINDOW_MS
+    );
+    recent.push(now);
+    chatAttempts.set(ip, recent);
+    return recent.length > MAX_CHAT_ATTEMPTS;
+}
+
+function sanitizeMessages(input) {
+    if (!Array.isArray(input) || input.length === 0 || input.length > MAX_MESSAGES) {
+        return null;
+    }
+
+    const messages = input.map((message) => ({
+        role: message?.role === 'assistant' ? 'assistant' : 'user',
+        content: typeof message?.content === 'string' ? message.content.trim() : ''
+    }));
+
+    if (
+        messages.some(
+            (message) =>
+                !message.content ||
+                message.content.length > MAX_MESSAGE_LENGTH
+        )
+    ) {
+        return null;
+    }
+
+    const totalLength = messages.reduce(
+        (total, message) => total + message.content.length,
+        0
+    );
+    return totalLength <= MAX_CONVERSATION_LENGTH ? messages : null;
+}
+
 function normalizeText(value = '') {
     return String(value)
         .normalize('NFD')
@@ -62,8 +124,22 @@ function getPropertiesContext(properties) {
 }
 
 export async function POST(req) {
+    if (!isAllowedOrigin(req)) {
+        return NextResponse.json({ error: 'Origen no permitido.' }, { status: 403 });
+    }
+    if (isRateLimited(req)) {
+        return NextResponse.json(
+            { error: 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.' },
+            { status: 429 }
+        );
+    }
+
     try {
-        const { messages } = await req.json();
+        const body = await req.json();
+        const messages = sanitizeMessages(body.messages);
+        if (!messages) {
+            return NextResponse.json({ error: 'Conversación inválida.' }, { status: 400 });
+        }
 
         if (!process.env.OPENAI_API_KEY) {
             return NextResponse.json({ reply: 'La clave de OpenAI no está configurada.' });

@@ -18,7 +18,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  metadataBase: new URL('https://alsasa-web.vercel.app'),
+  metadataBase: new URL('https://alsasa.co'),
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -40,7 +40,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "es_CO",
-    url: "https://alsasa-web.vercel.app",
+    url: "https://alsasa.co",
     siteName: "Alsasa Inmobiliaria",
     title: "Alsasa Inmobiliaria | Tu hogar ideal en Antioquia",
     description: "Encuentra casas, apartamentos y lotes en venta y arriendo en Medellín, Envigado, Sabaneta y Rionegro. En Alsasa Inmobiliaria te ayudamos a encontrar el hogar de tus sueños.",
@@ -82,10 +82,10 @@ export default function RootLayout({ children }) {
       <body>
         {children}
         <ChatWidget />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
-      {process.env.NEXT_PUBLIC_GA_ID && (
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-      )}
     </html>
   );
 }

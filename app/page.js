@@ -16,8 +16,8 @@ export default async function Home() {
             "@context": "https://schema.org",
             "@type": "RealEstateAgent",
             "name": "Alsasa Inmobiliaria",
-            "image": "https://alsasa-web.vercel.app/logo.png",
-            "url": "https://alsasa-web.vercel.app",
+            "image": "https://alsasa.co/logo.png",
+            "url": "https://alsasa.co",
             "telephone": "+573134321523",
             "address": {
               "@type": "PostalAddress",
@@ -35,13 +35,13 @@ export default async function Home() {
         <p style={{ fontSize: '1.2rem', color: 'var(--text-light)', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: '1.8' }}>
           Alsasa provee una experiencia premium y de confianza para familias que buscan propiedades excepcionales. Tu tranquilidad es nuestro compromiso.
         </p>
-        <button style={{
-          backgroundColor: 'var(--secondary)', color: 'white', padding: '1rem 2.5rem',
-          borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', border: 'none', cursor: 'pointer',
+        <a href="#propiedades" style={{
+          display: 'inline-block', backgroundColor: 'var(--secondary)', color: 'white', padding: '1rem 2.5rem',
+          borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', textDecoration: 'none',
           boxShadow: '0 4px 14px rgba(230, 126, 34, 0.4)'
         }}>
           Explorar Propiedades
-        </button>
+        </a>
       </section>
 
       <section id="propiedades" className="home-catalog" style={{ padding: '5rem 4rem', backgroundColor: 'var(--surface)' }}>

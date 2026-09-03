@@ -5,6 +5,6 @@ export default function robots() {
       allow: '/',
       disallow: ['/api/'],
     },
-    sitemap: 'https://alsasa-web.vercel.app/sitemap.xml',
+    sitemap: 'https://alsasa.co/sitemap.xml',
   };
 }
