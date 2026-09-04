@@ -8,7 +8,7 @@ export async function generateMetadata({ params }) {
 
     if (!property) return { title: 'Propiedad no encontrada | Alsasa Inmobiliaria' };
 
-    const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
+    const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(property.id)}`;
 
     return {
         title: `${property.title} | Propiedades Alsasa`,
@@ -34,7 +34,9 @@ export async function generateMetadata({ params }) {
 export default async function PropertyPage({ params }) {
     const { id } = await params;
     const property = await getPropertyById(id);
-    const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
+    const canonicalUrl = property
+        ? `https://alsasa.co/propiedad/${encodeURIComponent(property.id)}`
+        : `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
 
     if (!property) {
         return (
