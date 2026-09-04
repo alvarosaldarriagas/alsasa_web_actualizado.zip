@@ -1,10 +1,12 @@
 import Navbar from "@/components/Navbar";
 import { getPropertyById } from "@/lib/wp-api";
+import { normalizePropertyCode } from "@/lib/base44-api";
 import Link from 'next/link';
 import Image from 'next/image';
+import { permanentRedirect } from 'next/navigation';
 export async function generateMetadata({ params }) {
     const { id } = await params;
-    const property = await getPropertyById(id);
+    const property = await getPropertyById(normalizePropertyCode(id));
 
     if (!property) return { title: 'Propiedad no encontrada | Alsasa Inmobiliaria' };
 
@@ -33,7 +35,13 @@ export async function generateMetadata({ params }) {
 
 export default async function PropertyPage({ params }) {
     const { id } = await params;
-    const property = await getPropertyById(id);
+    const normalizedId = normalizePropertyCode(id);
+
+    if (normalizedId !== id) {
+        permanentRedirect(`/propiedad/${encodeURIComponent(normalizedId)}`);
+    }
+
+    const property = await getPropertyById(normalizedId);
     const canonicalUrl = property
         ? `https://alsasa.co/propiedad/${encodeURIComponent(property.id)}`
         : `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
