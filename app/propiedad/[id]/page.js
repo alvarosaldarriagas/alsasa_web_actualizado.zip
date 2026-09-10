@@ -79,7 +79,7 @@ export default async function PropertyPage({ params }) {
                             "price": property.price.replace(/\./g, ''), // Asegurando formato numérico
                             "priceCurrency": "COP"
                         }
-                    })
+                    }).replace(/</g, '\\u003c')
                 }}
             />
 
