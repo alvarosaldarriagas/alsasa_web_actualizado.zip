@@ -1,6 +1,31 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { approvedPosts, propertyCode, mapWordPressPost, mediaGallery, mergePhotoGallery, mergeCatalog } from "../lib/wordpress-bridge.mjs";
+import { approvedPosts, propertyCode, mapWordPressPost, mediaGallery, mergePhotoGallery, mergeCatalog, mergeWordPressPrice } from "../lib/wordpress-bridge.mjs";
+
+test("A1167 is a rental and constructed area takes precedence over other area", () => {
+  const record = post("A1167");
+  record.content.rendered += '<p>Área: 60 m2</p>';
+  const mapped = mapWordPressPost(record);
+  assert.equal(mapped.action, "Arriendo");
+  assert.equal(mapped.area, "90");
+  assert.equal(mapped.location, "El Carmelo, Sabaneta");
+  const monteflor = mapWordPressPost(post("A1166"));
+  assert.equal(monteflor.action, "Arriendo");
+  assert.equal(monteflor.location, "Monteflor, Sabaneta");
+  assert.equal(monteflor.beds, "3");
+  assert.equal(monteflor.baths, "2");
+});
+
+test("A1149 price updates in catalog and description without importing private WordPress fields", () => {
+  const base = {id:"A1149",price:"265.000.000",content:"Precio $265.000.000<br />Valor: $265.000.000",image:"old.jpg",location:"Public sector",base44Id:"original"};
+  const wp = post("A1149");
+  wp.content.rendered = '<p>ID A1149</p><p>Valor: $270.000.000</p><p>Ubicación: Private street</p>';
+  assert.deepEqual(mergeWordPressPrice(base, wp), {...base,price:"270.000.000",content:"Precio $270.000.000<br />Valor: $270.000.000"});
+  assert.equal(mergeCatalog([base], [wp])[0].price, "270.000.000");
+  const ambiguous = {...wp,content:{rendered:wp.content.rendered+'<p>Valor: $280.000.000</p>'}};
+  assert.equal(mergeWordPressPrice(base, ambiguous),base);
+  assert.equal(mergeWordPressPrice(base, {...wp,status:"draft"}),base);
+});
 
 const post = (code = "A1165") => ({ id: 24943, status: "publish", title: { rendered: "Apartamento &amp; balcón" },
   content: { rendered: `<p>ID ${code}</p><ul><li>Valor: $ 650.000.000</li><li>Área Construida: 90 m2</li><li>Habitaciones:3</li><li>Baños: 2</li><li>Ubicación: Calle privada 123</li><li>Propietario: Persona privada</li></ul>` } });
