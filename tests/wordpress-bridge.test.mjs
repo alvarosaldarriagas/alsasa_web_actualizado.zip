@@ -34,8 +34,18 @@ const photo = (id, extra = {}) => ({ id, post: 24943, mime_type: "image/jpeg", s
 test("only unambiguous published approved codes enter the bridge", () => {
   assert.equal(propertyCode(post()), "A1165");
   assert.deepEqual(approvedPosts([post(), post(), post("A9999"), { ...post("A1163"), status: "draft" }]), []);
-  assert.deepEqual(approvedPosts([post("A1163"), post("A1164")]).map(propertyCode), ["A1163", "A1164"]);
+  assert.deepEqual(approvedPosts([post("A1163"), { ...post("A1164"), id: 25004 }]).map(propertyCode), ["A1163", "A1164"]);
   assert.equal(propertyCode({ ...post(), content: { rendered: "Precio A1165 sin ID" } }), "");
+});
+
+test("A1164 selects its verified original and never falls back to a duplicate", () => {
+  const original = { ...post("A1164"), id: 25004 };
+  const duplicate = { ...original, id: 25005 };
+  assert.deepEqual(approvedPosts([duplicate, original]), [original]);
+  assert.deepEqual(approvedPosts([original, duplicate]), [original]);
+  assert.deepEqual(approvedPosts([duplicate]), []);
+  assert.deepEqual(approvedPosts([{ ...original, status: "draft" }, duplicate]), []);
+  assert.equal(mergeCatalog([], approvedPosts([duplicate, original]))[0].wordpressId, 25004);
 });
 
 test("public listing uses canonical code and supplied numeric fields without private labels", () => {
