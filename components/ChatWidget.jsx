@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import TurnstileChallenge from './TurnstileChallenge';
 
 export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
@@ -9,6 +10,10 @@ export default function ChatWidget() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+    const [proof, setProof] = useState(null);
+    const [challengeGeneration, setChallengeGeneration] = useState(0);
+    const [deliveryUncertain, setDeliveryUncertain] = useState(false);
+    const inFlight = useRef(false);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -20,7 +25,10 @@ export default function ChatWidget() {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!input.trim() || !proof || inFlight.current || deliveryUncertain) return;
+        inFlight.current = true;
+        const verification = proof;
+        setProof(null);
 
         const userMessage = input;
         const newMessages = [...messages, { role: 'user', content: userMessage }];
@@ -32,20 +40,29 @@ export default function ChatWidget() {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: newMessages })
+                body: JSON.stringify({ messages: newMessages.slice(-20), ...verification }),
+                signal: AbortSignal.timeout(30000), cache: 'no-store', redirect: 'error'
             });
             const data = await res.json();
 
-            setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
-        } catch (error) {
-            setMessages([...newMessages, { role: 'assistant', content: 'Disculpa, ocurrió un error en mis circuitos. Por favor intenta de nuevo en unos minutos.' }]);
+            if (!res.ok) {
+                if (res.status === 502) setDeliveryUncertain(true);
+                setMessages([...newMessages, { role: 'assistant', content: data.error || 'No pudimos completar la consulta.' }]);
+            } else if (typeof data.reply === 'string' && data.reply.trim()) {
+                setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
+            } else throw new Error('Respuesta inválida');
+        } catch {
+            setDeliveryUncertain(true);
+            setMessages([...newMessages, { role: 'assistant', content: 'No pudimos confirmar el resultado. Si solicitaste contacto, consulta por WhatsApp antes de reenviar.' }]);
         } finally {
+            inFlight.current = false;
             setIsLoading(false);
+            setChallengeGeneration(n => n + 1);
         }
     };
 
     return (
-        <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999 }}>
+        <div style={{ position: 'fixed', bottom: '1rem', right: '1rem', zIndex: 9999 }}>
             {/* Burbuja minimizada flotante */}
             {!isOpen && (
                 <button
@@ -66,7 +83,7 @@ export default function ChatWidget() {
             {/* Ventana de Chat Abierta */}
             {isOpen && (
                 <div style={{
-                    width: '380px', height: '550px', backgroundColor: 'white', borderRadius: '20px',
+                    width: 'min(380px, calc(100vw - 2rem))', height: 'min(650px, calc(100dvh - 4rem))', backgroundColor: 'white', borderRadius: '20px',
                     boxShadow: '0 20px 50px rgba(0,0,0,0.2)', display: 'flex', flexDirection: 'column',
                     overflow: 'hidden', border: '1px solid #eaeaea',
                     animation: 'slideUp 0.3s ease-out forwards'
@@ -115,16 +132,22 @@ export default function ChatWidget() {
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {!isLoading && !deliveryUncertain && <div style={{ padding: '0.5rem 1rem', flexShrink: 0 }}>
+                        <TurnstileChallenge key={challengeGeneration} kind="chat" onProof={setProof} />
+                    </div>}
+                    {deliveryUncertain && <a href="https://wa.me/573134321523" target="_blank" rel="noopener noreferrer" style={{ padding: '1rem' }}>Consultar por WhatsApp</a>}
                     {/* Input Área */}
                     <form onSubmit={sendMessage} style={{ padding: '1.2rem', backgroundColor: 'white', borderTop: '1px solid #f0f0f0', display: 'flex', gap: '10px' }}>
                         <input
                             type="text"
+                            aria-label="Tu pregunta"
+                            maxLength={2000}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Escribe tu pregunta aquí..."
-                            style={{ flex: 1, padding: '0.9rem 1.2rem', borderRadius: '30px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.95rem', backgroundColor: '#f8fafc', color: '#333' }}
+                            style={{ flex: 1, minWidth: 0, padding: '0.9rem 1.2rem', borderRadius: '30px', border: '1px solid #e2e8f0', outline: 'none', fontSize: '0.95rem', backgroundColor: '#f8fafc', color: '#333' }}
                         />
-                        <button type="submit" disabled={isLoading || !input.trim()} style={{ backgroundColor: input.trim() ? 'var(--primary)' : '#cbd5e1', color: 'white', border: 'none', width: '45px', height: '45px', borderRadius: '50%', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background-color 0.2s', fontSize: '1.2rem' }}>
+                        <button type="submit" aria-label="Enviar pregunta" disabled={isLoading || !proof || deliveryUncertain || !input.trim()} style={{ backgroundColor: input.trim() ? 'var(--primary)' : '#cbd5e1', color: 'white', border: 'none', width: '45px', height: '45px', borderRadius: '50%', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background-color 0.2s', fontSize: '1.2rem' }}>
                             ➤
                         </button>
                     </form>

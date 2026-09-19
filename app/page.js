@@ -1,3 +1,4 @@
+import ProtectedLeadForm from '@/components/ProtectedLeadForm';
 import Navbar from "@/components/Navbar";
 import PropertyFilterCatalog from "@/components/PropertyFilterCatalog";
 import { getProperties } from "@/lib/wp-api";
@@ -62,7 +63,7 @@ export default async function Home() {
             <p style={{ color: 'var(--text-light)', fontSize: '1.1rem' }}>Déjanos tus datos y un especialista de Alsasa Inmobiliaria se comunicará contigo a la mayor brevedad posible.</p>
           </div>
 
-          <form action="/api/leads" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <ProtectedLeadForm style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <input type="hidden" name="source" value="web_home" />
               <input type="hidden" name="lead_type" value="contacto_general" />
               <input type="text" name="website" tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
@@ -88,7 +89,7 @@ export default async function Home() {
               <div style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--text-light)', fontSize: '0.9rem' }}>
                   O háblanos directamente por <a href="https://wa.me/573134321523?text=Hola%20equipo%20Alsasa,%20necesito%20asesor%C3%ADa." target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold', textDecoration: 'none' }}>WhatsApp</a>
               </div>
-          </form>
+          </ProtectedLeadForm>
         </div>
       </section>
 
