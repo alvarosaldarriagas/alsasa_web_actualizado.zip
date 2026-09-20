@@ -8,6 +8,7 @@ export default function ChatWidget() {
         { role: 'assistant', content: '¡Hola! 🏠 Soy la IA Asesora de Alsasa Inmobiliaria. Fui entrenada para conocer todos nuestros inmuebles. ¿Qué tipo de propiedad estás buscando hoy?' }
     ]);
     const [input, setInput] = useState('');
+    const [contactConsent, setContactConsent] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
     const [proof, setProof] = useState(null);
@@ -40,8 +41,8 @@ export default function ChatWidget() {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: newMessages.slice(-20), ...verification }),
-                signal: AbortSignal.timeout(30000), cache: 'no-store', redirect: 'error'
+                body: JSON.stringify({ messages: newMessages.slice(-20), contactConsent, ...verification }),
+                signal: AbortSignal.timeout(55000), cache: 'no-store', redirect: 'error'
             });
             const data = await res.json();
 
@@ -136,6 +137,12 @@ export default function ChatWidget() {
                         <TurnstileChallenge key={challengeGeneration} kind="chat" onProof={setProof} />
                     </div>}
                     {deliveryUncertain && <a href="https://wa.me/573134321523" target="_blank" rel="noopener noreferrer" style={{ padding: '1rem' }}>Consultar por WhatsApp</a>}
+                    <label style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
+                        <input type="checkbox" checked={contactConsent} disabled={isLoading}
+                            onChange={e => setContactConsent(e.target.checked)} />{' '}
+                        Autorizo que Alsasa use mis datos para contactarme, según su{' '}
+                        <a href="/tratamiento-de-datos" target="_blank" rel="noopener noreferrer">política de datos</a>.
+                    </label>
                     {/* Input Área */}
                     <form onSubmit={sendMessage} style={{ padding: '1.2rem', backgroundColor: 'white', borderTop: '1px solid #f0f0f0', display: 'flex', gap: '10px' }}>
                         <input

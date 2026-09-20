@@ -25,6 +25,16 @@ async function checkServer(configured, port) {
       assert.equal(response.headers.get('cache-control'), 'no-store');
       assert.equal(typeof (await response.json()).error, 'string');
       console.log(`${path}: ${response.status}, configuración ${configured ? 'ficticia' : 'ausente'}`);
+      if (configured) {
+        const proof = { operation: '806c3f81-8d64-4f9c-82a8-b948094f32ab', proof: 'fake-proof-not-sent-to-cloudflare' };
+        const blocked = await fetch(`http://127.0.0.1:${port}${path}`, {
+          method: 'POST', headers: { Origin: 'https://alsasa.co', 'Content-Type': path.endsWith('leads') ? 'application/x-www-form-urlencoded' : 'application/json' },
+          body: path.endsWith('leads') ? new URLSearchParams(proof) : JSON.stringify(proof),
+        });
+        assert.equal(blocked.status, 503, 'missing durable admission configuration must stop before Siteverify');
+        assert.equal(blocked.headers.get('cache-control'), 'no-store');
+        console.log(`${path}: 503, admisión persistente sin configurar`);
+      }
     }
   } finally {
     server.kill('SIGTERM');

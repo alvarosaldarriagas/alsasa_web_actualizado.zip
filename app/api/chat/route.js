@@ -4,29 +4,11 @@ import { NextResponse } from 'next/server';
 import { getProperties } from '@/lib/wp-api';
 import { submitLeadToBase44 } from '@/lib/base44-leads';
 
-const chatAttempts = new Map();
-const CHAT_WINDOW_MS = 10 * 60 * 1000;
-const MAX_CHAT_ATTEMPTS = 30;
+export const runtime = 'nodejs';
+
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_CONVERSATION_LENGTH = 8000;
-
-function isRateLimited(request) {
-    const forwarded = request.headers.get('x-forwarded-for') || '';
-    const ip = forwarded.split(',')[0].trim() || 'unknown';
-    const now = Date.now();
-  for (const [key, times] of chatAttempts) {
-    if (!times.length || now - times[times.length - 1] >= CHAT_WINDOW_MS) chatAttempts.delete(key);
-  }
-  if (!chatAttempts.has(ip) && chatAttempts.size >= 5000) return true;
-    const recent = (chatAttempts.get(ip) || []).filter(
-        (time) => now - time < CHAT_WINDOW_MS
-    );
-    if (recent.length >= MAX_CHAT_ATTEMPTS) return true;
-    recent.push(now);
-    chatAttempts.set(ip, recent);
-    return recent.length > MAX_CHAT_ATTEMPTS;
-}
 
 function sanitizeMessages(input) {
     if (!Array.isArray(input) || input.length === 0 || input.length > MAX_MESSAGES) {
@@ -114,14 +96,7 @@ function getPropertiesContext(properties) {
 }
 
 export async function POST(req) {
-  return protectRequest(req, 'chat', async (body) => {
-    if (isRateLimited(req)) {
-        return NextResponse.json(
-            { error: 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.' },
-            { status: 429 }
-        );
-    }
-
+  return protectRequest(req, 'chat', async (body, context) => {
     try {
         const messages = sanitizeMessages(body.messages);
         if (!messages) {
@@ -212,6 +187,7 @@ ${propertiesContext}
             const toolCall = message.tool_calls[0];
 
             if (toolCall.function.name === 'capture_lead') {
+                if (body.contactConsent !== true) return NextResponse.json({ reply: 'Para solicitar que un asesor te contacte, marca la autorización de tratamiento de datos debajo del chat.' });
                 const args = JSON.parse(toolCall.function.arguments);
                 const matchedProperty = resolveProperty(
                     properties,
@@ -232,8 +208,9 @@ ${propertiesContext}
                     source: 'Alsasa AI Chatbot',
                     lead_type: 'chatbot',
                     property_id: matchedProperty.base44Id,
-                    consent: args.consent === true
-                });
+                    consent: body.contactConsent === true && args.consent === true,
+                    messages
+                }, context);
 
                 if (!leadResult.success) {
                     throw new Error(leadResult.error || 'No se pudo registrar el lead en Base44');

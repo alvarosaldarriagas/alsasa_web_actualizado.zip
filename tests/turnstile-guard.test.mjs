@@ -6,6 +6,7 @@ const operation = '806c3f81-8d64-4f9c-82a8-b948094f32ab';
 const now = Date.parse('2026-09-19T12:00:00Z');
 const env = { ALSASA_WEB_PROTECTION_ENABLED: 'true', ALSASA_TURNSTILE_HOSTNAME: 'alsasa.co', ALSASA_TURNSTILE_SECRET_KEY: 'test-only-fake-secret' };
 const payload = { proof: 'fake-token', operation, messages: [{ role: 'user', content: 'Hola' }] };
+const admitIngress = async () => ({ allowed: true, subject: 'a'.repeat(64) });
 const verified = { success: true, hostname: 'alsasa.co', action: 'alsasa_chat', cdata: operation, challenge_ts: new Date(now).toISOString() };
 function request(body = payload, headers = {}) {
   return new Request('https://alsasa.co/api/chat', { method: 'POST', headers: { origin: 'https://alsasa.co', 'content-type': 'application/json', ...headers }, body: JSON.stringify(body) });
@@ -15,7 +16,7 @@ async function invoke(req, options = {}, data = verified) {
   const response = await protectRequest(req, 'chat', async (body) => {
     businessCalls++; received = body;
     return Response.json({ reply: 'Respuesta de prueba' });
-  }, { env, now: () => now, fetcher: async (url, init) => {
+  }, { env, admitIngress, now: () => now, fetcher: async (url, init) => {
     verifyCalls++;
     assert.equal(url, 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
     assert.equal(init.redirect, 'error');
@@ -83,7 +84,7 @@ test('duplicate form parameters are rejected before verification', async () => {
 });
 test('form proof uses a distinct Cloudflare action', async () => {
   const req = new Request('https://alsasa.co/api/leads', { method: 'POST', headers: { origin: 'https://alsasa.co', 'content-type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body: new URLSearchParams({ operation, proof: 'fake', consent: 'on' }) });
-  const res = await protectRequest(req, 'form', body => { assert.equal(body.consent, 'on'); return Response.json({ success: true }); }, { env, now: () => now, fetcher: async () => Response.json({ ...verified, action: 'alsasa_form' }) });
+  const res = await protectRequest(req, 'form', body => { assert.equal(body.consent, 'on'); return Response.json({ success: true }); }, { env, admitIngress, now: () => now, fetcher: async () => Response.json({ ...verified, action: 'alsasa_form' }) });
   assert.equal(res.status, 200);
 });
 test('bounded reader cancels overflow and stalled streams', async () => {
