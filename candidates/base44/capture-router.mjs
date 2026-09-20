@@ -10,7 +10,7 @@ export function createCaptureRouter({ kind, receiver, readPublic } = {}) {
     if (!binding) return reply(503, 'unconfigured');
     const paths = [`/functions/${binding.route}`, `/api/apps/${binding.app}/functions/${binding.route}`];
     if (!paths.includes(new URL(request.url).pathname)) return reply(404, 'route_not_found');
-    if (request.method === 'GET' && kind === 'form' && typeof readPublic === 'function') return readPublic(request);
+    if (['GET', 'OPTIONS'].includes(request.method) && kind === 'form' && typeof readPublic === 'function') return readPublic(request);
     if (request.method !== 'POST') return reply(405, 'method_not_allowed');
     if (typeof receiver?.handle !== 'function') return reply(503, 'paused');
     try { return await receiver.handle(request); }

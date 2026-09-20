@@ -92,11 +92,10 @@ Public site key supplied by the owner: `0x4AAAAAAE9CuOqyU22WeN5E`.
 
 ## Concrete cutover work remaining
 
-1. Wire the existing Base44 commercial candidate and bounded SDK into deployed-runtime
-   configuration, verify key inventory, and prepare exact changes for `publicApi`
-   POST and `captureChatLead`. Preserve catalog reads, replace all legacy capture
-   POST dispatches, and inventory other public import/capture endpoints. The live
-   direct routes remain unchanged and are not protected by this candidate yet.
+1. The complete Base44 replacements and atomic key inventory are now prepared in
+   `candidates/base44/generated/` and tested locally/in isolated SQL. See
+   `receiver-cutover-status.md`. Their secure configuration and hosted verification
+   remain required before installation. Live direct routes are still unchanged.
 2. Provision credentials and finite limits in an isolated preview, apply the migration
    there, and connect the web role plus separate receiver roles. The new ingress role
    must never receive access to customer payloads or commercial functions.
