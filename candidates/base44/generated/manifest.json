@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "4dacaf500c176d7bb29963364d452ce1278a3efc",
+  "files": {
+    "publicApi": {
+      "sdk": "0.8.40",
+      "sourceSha256": "c8729d1d1f53a29007997152b9035cb4ae7b7e495139c66fcd332b2c07658e31",
+      "generatedSha256": "f88abbc46e9d9657425178029071e95deafc42adc41027296a26d91e838ed34c"
+    },
+    "captureChatLead": {
+      "sdk": "0.8.25",
+      "sourceSha256": "2f96428ada4068c7036f9cfe902644dcd2227fb98e38d6e3c7c9e1b65d1c0528",
+      "generatedSha256": "73fc433c3fd91bbf3175985eda1161c1c5f2a133d6b51225fcd1eabbd00a16ee"
+    }
+  }
+}

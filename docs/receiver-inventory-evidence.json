@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-20T02:04:01.303Z",
+  "branch": "br-fragrant-frog-aun1tbvl",
+  "passed": 7,
+  "results": [
+    {
+      "name": "Empty inventory returns no keys and no ciphertext",
+      "passed": true
+    },
+    {
+      "name": "Persisted older encryption key is detected",
+      "passed": true
+    },
+    {
+      "name": "Missing old key rejects before creating a new operation",
+      "passed": true
+    },
+    {
+      "name": "Complete keyring authorizes encrypted admission and retains both key IDs",
+      "passed": true
+    },
+    {
+      "name": "Inventory holds the same gate row lock until admission transaction ends",
+      "passed": true
+    },
+    {
+      "name": "Scope isolation and least-privilege inventory access are enforced",
+      "passed": true
+    },
+    {
+      "name": "Corrupted inventory cannot authorize new storage",
+      "passed": true
+    }
+  ],
+  "installed": true,
+  "closed": true,
+  "realCrmCalls": 0
+}

@@ -1,0 +1,52 @@
+{
+  "passed": 10,
+  "runtime": {
+    "deno": "2.9.6",
+    "v8": "15.0.245.2-rusty",
+    "typescript": "6.0.3"
+  },
+  "realCrmCalls": 0,
+  "localCatalogReads": 1,
+  "results": [
+    {
+      "name": "publicApi missing configuration rejects writes",
+      "passed": true
+    },
+    {
+      "name": "Catalog OPTIONS still works while capture is paused",
+      "passed": true
+    },
+    {
+      "name": "Catalog GET uses pinned SDK and retains public projection",
+      "passed": true
+    },
+    {
+      "name": "publicApi unsigned POST is rejected before SQL or CRM",
+      "passed": true
+    },
+    {
+      "name": "publicApi alternate method cannot reach a legacy write path",
+      "passed": true
+    },
+    {
+      "name": "publicApi altered signature is rejected before SQL or CRM",
+      "passed": true
+    },
+    {
+      "name": "captureChatLead missing configuration rejects writes",
+      "passed": true
+    },
+    {
+      "name": "captureChatLead unsigned POST is rejected before SQL or CRM",
+      "passed": true
+    },
+    {
+      "name": "captureChatLead alternate method cannot reach a legacy write path",
+      "passed": true
+    },
+    {
+      "name": "captureChatLead altered signature is rejected before SQL or CRM",
+      "passed": true
+    }
+  ]
+}
