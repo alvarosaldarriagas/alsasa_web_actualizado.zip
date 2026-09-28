@@ -65,7 +65,7 @@ Rebuild with `npm ci --prefix candidates/base44/tooling` and
 `runtime/` is the previously reviewed receiver dependency graph, copied without functional
 changes; `source/` holds the input entrypoints, not an additional live endpoint.
 
-## Activation still blocked
+## Activation blockers at the previous checkpoint
 
 The Vercel project query still returns `INVALID_ARGUMENT`. The current tools do not
 expose Base44 secret provisioning. No permanent credentials were created, and neither
@@ -74,3 +74,34 @@ preview, verify the real gateway, widget and disposable CRM delivery, then coord
 both deployments. Missing configuration closes capture; there is no unsigned fallback.
 
 Other CRM writers have separate authorization paths. See `docs/receiver-cutover-status.md`.
+
+## Hosted isolation verified — 2026-09-28
+
+The official testing origin is `https://share--alsasa-crm-9f762688.base44.app`.
+Ordinary production HTTP endpoints ignored a requested dev header in our catalog
+probe; the testing origin supplied both `X-Data-Env: dev` and a dev-scoped service
+credential. Both pinned SDK transports read a disposable test-only marker there.
+Production queries found no marker before or after its creation. Cleanup was
+confirmed; the temporary diagnostic now returns 410 on both origins and its
+operator key was removed. This was not a full signed lead delivery.
+
+`ALSASA_CAPTURE_DATA_ENV` is now required when enabling capture. Use `dev` for
+the isolated pilot and `prod` only for the coordinated production cutover. The
+receiver compares this configuration with the gateway credential's environment
+and header before SQL admission or CRM transport. Decoding claims is a consistency
+check only; the SDK/API still authenticates the service credential.
+
+On Vercel, set the same variable to `dev` for Preview and `prod` for Production.
+The sender pins the corresponding origin and rejects missing/unknown/crossed
+deployment configuration. No user-controlled origin or dev header switches data.
+Base44 secrets are shared across branches: do not enable a dev-configured
+replacement on the live production capture entrypoints.
+
+Verified: 80 Node tests, 12 bundled Deno checks, Next.js build, real hosted pinned
+imports and bounded SDK reads, one disposable Test marker created/read/deleted.
+Still pending: secure scoped runtime provisioning, hosted Neon admission, real
+server-side Turnstile and an end-to-end signed receipt. Existing live business
+entrypoints are unchanged. The two generated files remain inactive candidates.
+
+Source hash comparison uses the generator's UTF-8 `trimEnd()` normalization;
+a raw file hash may differ solely because of trailing whitespace.

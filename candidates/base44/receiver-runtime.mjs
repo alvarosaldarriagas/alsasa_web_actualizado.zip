@@ -1,4 +1,5 @@
 import { readReceiverConfig } from './runtime-config.mjs';
+import { gatewayDataEnvironment } from './gateway-environment.mjs';
 import { InventoryAdmissionLedger } from './inventory-ledger.mjs';
 import { createCaptureRouter } from './capture-router.mjs';
 import { createCommercialReceiver } from './runtime/form-integration-2026-09-19/commercial-receiver.mjs';
@@ -29,6 +30,7 @@ export function createReceiverRuntime({ kind, env, Pool, createAxiosClient, crea
       // persist the token, or let request headers choose the app/API destination.
       const authorization = request.headers.get('Base44-Service-Authorization');
       if (request.headers.get('Base44-App-Id') !== APP || !/^Bearer [^\s]{16,8192}$/.test(authorization || '')) return reply(503, 'platform_configuration_required');
+      if (gatewayDataEnvironment(request.headers) !== c.dataEnv) return reply(503, 'environment_configuration_required');
       let transport, receiver;
       try {
         transport = createBoundedEntities({ createAxiosClient, createEntitiesModule, serverUrl: c.serverUrl,

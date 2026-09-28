@@ -13,7 +13,7 @@ const server = nativeServe({ hostname: '127.0.0.1', port: 0, signal: stop.signal
 Deno.serve = callback => { handler=callback; return {}; };
 const results=[];const check=async(name,fn)=>{await fn();results.push({name,passed:true});console.log('PASS '+name);};
 const signing=randomBytes(32),identity=randomBytes(32),encryption=randomBytes(32);
-const config={ALSASA_CAPTURE_ENABLED:'true',ALSASA_CAPTURE_SCOPE:'pilot',ALSASA_CAPTURE_POLICY:'window',
+const config={ALSASA_CAPTURE_ENABLED:'true',ALSASA_CAPTURE_DATA_ENV:'prod',ALSASA_CAPTURE_SCOPE:'pilot',ALSASA_CAPTURE_POLICY:'window',
  ALSASA_CAPTURE_STARTS_AT:new Date(Date.now()-60000).toISOString(),ALSASA_CAPTURE_ENDS_AT:new Date(Date.now()+60000).toISOString(),
  ALSASA_CAPTURE_SIGNING_KEY:signing.toString('hex'),ALSASA_CAPTURE_IDENTITY_KEY:identity.toString('hex'),
  ALSASA_CAPTURE_KEYRING_JSON:JSON.stringify({activeId:'test',entries:[{id:'test',key:encryption.toString('hex')}]}),
@@ -40,10 +40,15 @@ try {
   await check(name+' alternate method cannot reach a legacy write path',async()=>{
    assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{method:'PUT'}))).status,405);
   });
+  await check(name+' test credential cannot enter a production receiver',async()=>{
+   const testToken='Bearer e30.'+Buffer.from(JSON.stringify({data_env:'dev'})).toString('base64url')+'.synthetic_signature_only';
+   const response=await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{'x-alsasa-envelope':'{}','Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':testToken,'X-Data-Env':'dev'},body:'{}'}));
+   assert.equal(response.status,503);assert.equal((await response.json()).code,'environment_configuration_required');
+  });
   await check(name+' altered signature is rejected before SQL or CRM',async()=>{
    const bytes=Buffer.from(JSON.stringify({email:'test@example.invalid',consent:true}));
    const envelope=signEnvelope(signing,{...CAPTURE_ROUTES[kind],operation:'806c3f81-8d64-4f9c-82a8-b948094f32ab',subject:'a'.repeat(64),policy:'window',expiresAt:Date.now()+30000},bytes);
-   const r=await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{'content-type':'application/json','x-alsasa-envelope':JSON.stringify(envelope),'Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':'Bearer synthetic-gateway-token','Base44-Api-Url':'https://ignored-header.invalid'},body:'{}'}));assert.equal(r.status,401);
+   const r=await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{'content-type':'application/json','x-alsasa-envelope':JSON.stringify(envelope),'Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':'Bearer e30.e30.synthetic_signature_only','Base44-Api-Url':'https://ignored-header.invalid'},body:'{}'}));assert.equal(r.status,401);
   });
  }
  assert.equal(sdkCalls,1);

@@ -273,5 +273,5 @@ async function readPublic(req) {
     return json({ error: 'Error interno del servidor' }, 500);
   }
 }
-const receiver = createReceiverRuntime({ kind: 'form', env: Object.fromEntries(['ALSASA_CAPTURE_ENABLED','ALSASA_CAPTURE_SCOPE','ALSASA_CAPTURE_POLICY','ALSASA_CAPTURE_STARTS_AT','ALSASA_CAPTURE_ENDS_AT','ALSASA_CAPTURE_SIGNING_KEY','ALSASA_CAPTURE_IDENTITY_KEY','ALSASA_CAPTURE_KEYRING_JSON','ALSASA_CAPTURE_ADMISSION_DATABASE_URL','ALSASA_CAPTURE_EXECUTION_DATABASE_URL'].map(name => [name, Deno.env.get(name)])), Pool, createAxiosClient, createEntitiesModule, readPublic });
+const receiver = createReceiverRuntime({ kind: 'form', env: Object.fromEntries(['ALSASA_CAPTURE_ENABLED','ALSASA_CAPTURE_DATA_ENV','ALSASA_CAPTURE_SCOPE','ALSASA_CAPTURE_POLICY','ALSASA_CAPTURE_STARTS_AT','ALSASA_CAPTURE_ENDS_AT','ALSASA_CAPTURE_SIGNING_KEY','ALSASA_CAPTURE_IDENTITY_KEY','ALSASA_CAPTURE_KEYRING_JSON','ALSASA_CAPTURE_ADMISSION_DATABASE_URL','ALSASA_CAPTURE_EXECUTION_DATABASE_URL'].map(name => [name, Deno.env.get(name)])), Pool, createAxiosClient, createEntitiesModule, readPublic });
 Deno.serve(request => receiver.handle(request));

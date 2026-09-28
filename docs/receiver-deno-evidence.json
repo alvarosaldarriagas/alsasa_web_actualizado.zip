@@ -1,5 +1,5 @@
 {
-  "passed": 10,
+  "passed": 12,
   "runtime": {
     "deno": "2.9.6",
     "v8": "15.0.245.2-rusty",
@@ -29,6 +29,10 @@
       "passed": true
     },
     {
+      "name": "publicApi test credential cannot enter a production receiver",
+      "passed": true
+    },
+    {
       "name": "publicApi altered signature is rejected before SQL or CRM",
       "passed": true
     },
@@ -42,6 +46,10 @@
     },
     {
       "name": "captureChatLead alternate method cannot reach a legacy write path",
+      "passed": true
+    },
+    {
+      "name": "captureChatLead test credential cannot enter a production receiver",
       "passed": true
     },
     {

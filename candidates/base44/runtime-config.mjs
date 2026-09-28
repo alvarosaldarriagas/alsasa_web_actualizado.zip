@@ -15,6 +15,8 @@ function database(raw, role) {
 }
 export function readReceiverConfig(env) {
   if (env.ALSASA_CAPTURE_ENABLED !== 'true') return null;
+  const dataEnv = env.ALSASA_CAPTURE_DATA_ENV;
+  if (!['dev', 'prod'].includes(dataEnv)) throw Error('Capture environment required');
   const scope = env.ALSASA_CAPTURE_SCOPE, id = env.ALSASA_CAPTURE_POLICY;
   if (!validId(scope) || !validId(id)) throw Error('Invalid receiver policy');
   const startsAt = Date.parse(env.ALSASA_CAPTURE_STARTS_AT), endsAt = Date.parse(env.ALSASA_CAPTURE_ENDS_AT);
@@ -32,6 +34,6 @@ export function readReceiverConfig(env) {
   const execution = database(env.ALSASA_CAPTURE_EXECUTION_DATABASE_URL, 'alsasa_capture_exec');
   if (admission.host !== execution.host || admission.database !== execution.database) throw Error('Database mismatch');
   // Fixed origin: request headers cannot redirect a service credential to another server.
-  return { scope, policy: { id, enabled: true, startsAt, endsAt }, signingKey, identityKey, ring, admission, execution,
+  return { scope, dataEnv, policy: { id, enabled: true, startsAt, endsAt }, signingKey, identityKey, ring, admission, execution,
     serverUrl: 'https://base44.app' };
 }

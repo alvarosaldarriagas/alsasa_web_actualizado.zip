@@ -117,6 +117,8 @@ function database(raw, role) {
 }
 function readReceiverConfig(env) {
   if (env.ALSASA_CAPTURE_ENABLED !== "true") return null;
+  const dataEnv = env.ALSASA_CAPTURE_DATA_ENV;
+  if (!["dev", "prod"].includes(dataEnv)) throw Error("Capture environment required");
   const scope = env.ALSASA_CAPTURE_SCOPE, id4 = env.ALSASA_CAPTURE_POLICY;
   if (!validId(scope) || !validId(id4)) throw Error("Invalid receiver policy");
   const startsAt = Date.parse(env.ALSASA_CAPTURE_STARTS_AT), endsAt = Date.parse(env.ALSASA_CAPTURE_ENDS_AT);
@@ -135,6 +137,7 @@ function readReceiverConfig(env) {
   if (admission.host !== execution.host || admission.database !== execution.database) throw Error("Database mismatch");
   return {
     scope,
+    dataEnv,
     policy: { id: id4, enabled: true, startsAt, endsAt },
     signingKey,
     identityKey,
@@ -143,6 +146,26 @@ function readReceiverConfig(env) {
     execution,
     serverUrl: "https://base44.app"
   };
+}
+
+// candidates/base44/gateway-environment.mjs
+function gatewayDataEnvironment(headers) {
+  const authorization = headers.get("Base44-Service-Authorization") || "";
+  if (!/^Bearer [^\s]{16,8192}$/.test(authorization)) return null;
+  const parts = authorization.slice(7).split(".");
+  if (parts.length !== 3 || parts.some((part) => !/^[a-zA-Z0-9_-]+$/.test(part))) return null;
+  try {
+    const claims = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
+    if (!claims || typeof claims !== "object" || Array.isArray(claims)) return null;
+    const environment = claims.data_env === void 0 ? "prod" : claims.data_env;
+    if (!["dev", "prod"].includes(environment)) return null;
+    const header = headers.get("X-Data-Env");
+    if (environment === "dev" && header !== "dev") return null;
+    if (environment === "prod" && header !== null && header !== "prod") return null;
+    return environment;
+  } catch {
+    return null;
+  }
 }
 
 // candidates/base44/inventory-ledger.mjs
@@ -990,6 +1013,7 @@ function createReceiverRuntime({ kind, env, Pool: Pool2, createAxiosClient: crea
       if (!request.headers.get("x-alsasa-envelope")) return reply3(401, "authorization_required");
       const authorization = request.headers.get("Base44-Service-Authorization");
       if (request.headers.get("Base44-App-Id") !== APP2 || !/^Bearer [^\s]{16,8192}$/.test(authorization || "")) return reply3(503, "platform_configuration_required");
+      if (gatewayDataEnvironment(request.headers) !== c.dataEnv) return reply3(503, "environment_configuration_required");
       let transport, receiver2;
       try {
         transport = createBoundedEntities({
@@ -1178,5 +1202,5 @@ async function readPublic(req) {
     return json({ error: "Error interno del servidor" }, 500);
   }
 }
-var receiver = createReceiverRuntime({ kind: "form", env: Object.fromEntries(["ALSASA_CAPTURE_ENABLED", "ALSASA_CAPTURE_SCOPE", "ALSASA_CAPTURE_POLICY", "ALSASA_CAPTURE_STARTS_AT", "ALSASA_CAPTURE_ENDS_AT", "ALSASA_CAPTURE_SIGNING_KEY", "ALSASA_CAPTURE_IDENTITY_KEY", "ALSASA_CAPTURE_KEYRING_JSON", "ALSASA_CAPTURE_ADMISSION_DATABASE_URL", "ALSASA_CAPTURE_EXECUTION_DATABASE_URL"].map((name) => [name, Deno.env.get(name)])), Pool, createAxiosClient, createEntitiesModule, readPublic });
+var receiver = createReceiverRuntime({ kind: "form", env: Object.fromEntries(["ALSASA_CAPTURE_ENABLED", "ALSASA_CAPTURE_DATA_ENV", "ALSASA_CAPTURE_SCOPE", "ALSASA_CAPTURE_POLICY", "ALSASA_CAPTURE_STARTS_AT", "ALSASA_CAPTURE_ENDS_AT", "ALSASA_CAPTURE_SIGNING_KEY", "ALSASA_CAPTURE_IDENTITY_KEY", "ALSASA_CAPTURE_KEYRING_JSON", "ALSASA_CAPTURE_ADMISSION_DATABASE_URL", "ALSASA_CAPTURE_EXECUTION_DATABASE_URL"].map((name) => [name, Deno.env.get(name)])), Pool, createAxiosClient, createEntitiesModule, readPublic });
 Deno.serve((request) => receiver.handle(request));

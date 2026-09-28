@@ -7,7 +7,7 @@ import { CAPTURE_ROUTES } from '../lib/capture-contract.mjs';
 
 const lead = { full_name: 'Prueba local', email: 'test@example.invalid', phone: '3000000000', consent: true };
 const context = { kind: 'form', subject: 'a'.repeat(64), operation: '806c3f81-8d64-4f9c-82a8-b948094f32ab' };
-const key = randomBytes(32), env = { ALSASA_CAPTURE_SIGNING_KEY: key.toString('hex'), ALSASA_CAPTURE_POLICY: 'test-only' };
+const key = randomBytes(32), env = { ALSASA_CAPTURE_DATA_ENV: 'dev', VERCEL_ENV: 'preview', ALSASA_CAPTURE_SIGNING_KEY: key.toString('hex'), ALSASA_CAPTURE_POLICY: 'test-only' };
 const receipt = { success: true, delivered: true, code: 'delivered', operation: context.operation };
 test('only explicit boolean consent is accepted', () => {
   for (const consent of [false, undefined, 'false', 'true', 1]) assert.ok(validateLead({ ...lead, consent }).error);
@@ -17,7 +17,7 @@ test('sender signs exact validated bytes and binds channel, operation and policy
   let calls = 0;
   const result = await submitLeadToBase44(lead, context, { env, fetcher: async (url, init) => {
     calls++;
-    assert.equal(url, 'https://alsasa-crm-9f762688.base44.app/functions/publicApi');
+    assert.equal(url, 'https://share--alsasa-crm-9f762688.base44.app/functions/publicApi');
     assert.equal(init.redirect, 'error'); assert.ok(init.signal);
     const envelope = JSON.parse(init.headers['x-alsasa-envelope']);
     assert.equal(envelope.operation, context.operation); assert.equal(envelope.policy, env.ALSASA_CAPTURE_POLICY);
@@ -59,4 +59,23 @@ test('chat uses its own schema and signed route', async () => {
     },
   });
   assert.equal(result.success, true);
+});
+
+test('production capture requires explicit production deployment and destination', async () => {
+  let calls = 0;
+  const result = await submitLeadToBase44(lead, context, {env:{...env,VERCEL_ENV:'production',ALSASA_CAPTURE_DATA_ENV:'prod'},fetcher:async url=>{
+    calls++;assert.equal(url,'https://alsasa-crm-9f762688.base44.app/functions/publicApi');
+    return Response.json(receipt,{status:201});
+  }});
+  assert.equal(result.success,true);assert.equal(calls,1);
+});
+test('missing, unknown or crossed environments cannot send CRM requests', async () => {
+  let calls=0;const fetcher=async()=>{calls++;throw Error('CRM must not run');};
+  for(const change of [
+    {ALSASA_CAPTURE_DATA_ENV:undefined},{ALSASA_CAPTURE_DATA_ENV:'test'},
+    {ALSASA_CAPTURE_DATA_ENV:'prod'},{VERCEL_ENV:'production'},
+    {VERCEL_ENV:'staging'},{VERCEL_ENV:'development',ALSASA_CAPTURE_DATA_ENV:'prod'},
+    {VERCEL_ENV:undefined,ALSASA_CAPTURE_DATA_ENV:'prod'}
+  ]) assert.equal((await submitLeadToBase44(lead,context,{env:{...env,...change},fetcher})).success,false);
+  assert.equal(calls,0);
 });

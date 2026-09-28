@@ -6,7 +6,7 @@ import { createReceiverRuntime } from '../candidates/base44/receiver-runtime.mjs
 import { InventoryAdmissionLedger } from '../candidates/base44/inventory-ledger.mjs';
 const signing = randomBytes(32).toString('hex'), identity = randomBytes(32).toString('hex'), encryption = randomBytes(32).toString('hex');
 const env = {
- ALSASA_CAPTURE_ENABLED:'true', ALSASA_CAPTURE_SCOPE:'pilot', ALSASA_CAPTURE_POLICY:'window',
+ ALSASA_CAPTURE_ENABLED:'true', ALSASA_CAPTURE_DATA_ENV:'prod', ALSASA_CAPTURE_SCOPE:'pilot', ALSASA_CAPTURE_POLICY:'window',
  ALSASA_CAPTURE_STARTS_AT:'2026-09-20T00:00:00Z',ALSASA_CAPTURE_ENDS_AT:'2026-09-20T01:00:00Z',
  ALSASA_CAPTURE_SIGNING_KEY:signing, ALSASA_CAPTURE_IDENTITY_KEY:identity,
  ALSASA_CAPTURE_KEYRING_JSON:JSON.stringify({activeId:'test',entries:[{id:'test',key:encryption}]}),
@@ -19,6 +19,7 @@ test('configuration fixes CRM origin, TLS and least privilege roles',()=>{
  assert.equal(c.admission.user,'alsasa_capture_admit');assert.equal(c.execution.user,'alsasa_capture_exec');assert.equal(c.admission.ssl.rejectUnauthorized,true);
 });
 for(const [name,change]of [
+ ['missing data environment',{ALSASA_CAPTURE_DATA_ENV:undefined}],['unknown data environment',{ALSASA_CAPTURE_DATA_ENV:'test'}],
  ['key reuse',{ALSASA_CAPTURE_IDENTITY_KEY:signing}],['missing old key material',{ALSASA_CAPTURE_KEYRING_JSON:'{}'}],
  ['owner credentials',{ALSASA_CAPTURE_ADMISSION_DATABASE_URL:env.ALSASA_CAPTURE_ADMISSION_DATABASE_URL.replace('alsasa_capture_admit','neondb_owner')}],
  ['different database',{ALSASA_CAPTURE_EXECUTION_DATABASE_URL:env.ALSASA_CAPTURE_EXECUTION_DATABASE_URL.replace('/db','/other')}],
@@ -54,4 +55,23 @@ test('inventory or commit ambiguity cannot produce success or automatic retry',a
   const l=ledger(inventory,'UNKNOWN');await assert.rejects(l.instance.call('admit',{payload:{keyId:'new'}}));
   assert.ok(l.calls.filter(x=>x.includes('.capture(')).length<=1);assert.equal(l.destroyed,true);
  }
+});
+
+test('crossed or ambiguous gateway environments stop before SQL or CRM transport', async()=>{
+  let connects=0,transports=0;
+  class Pool{on(){} async end(){} async connect(){connects++;throw Error('SQL must not run');}}
+  const token=claims=>'Bearer '+Buffer.from('{}').toString('base64url')+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url')+'.synthetic_signature_only';
+  for(const [expected,claims,header] of [
+    ['dev',{},'dev'],['dev',{data_env:'dev'},null],['prod',{data_env:'dev'},'dev'],
+    ['prod',{},'dev'],['dev',{data_env:'unknown'},'dev']
+  ]){
+    const runtime=createReceiverRuntime({kind:'form',env:{...env,ALSASA_CAPTURE_DATA_ENV:expected},Pool,
+      createAxiosClient:()=>{transports++;throw Error('CRM must not run');}});
+    const headers={'x-alsasa-envelope':'{}','Base44-App-Id':'68b1e87f22e7326f9f762688','Base44-Service-Authorization':token(claims)};
+    if(header!==null)headers['X-Data-Env']=header;
+    const response=await runtime.handle(new Request('https://example.invalid/functions/publicApi',{method:'POST',headers,body:'{}'}));
+    assert.equal(response.status,503);assert.equal((await response.json()).code,'environment_configuration_required');
+    await runtime.close();
+  }
+  assert.equal(connects,0);assert.equal(transports,0);
 });
