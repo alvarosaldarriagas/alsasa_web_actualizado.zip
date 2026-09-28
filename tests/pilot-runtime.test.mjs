@@ -47,4 +47,16 @@ for (const kind of ['form','chat']) {
     assert.equal((await f.runtime.handle(new Request('https://example.invalid/functions/'+binding.route,request()))).status,404);
     assert.equal(f.calls.sql,0);assert.equal(f.calls.crm,0);await f.runtime.close();
   });
+  test(name+' accepts hosted dispatch only with matching environment, app and signature',async()=>{
+    const f=fixture(kind), path='/run/'+'a'.repeat(32);
+    const dispatched=req=>new Request('https://base44-dispatcher-production.base44.workers.dev'+path,req);
+    assert.equal((await f.runtime.handle(new Request('https://example.invalid'+path,request()))).status,404);
+    assert.equal((await f.runtime.handle(dispatched(request({},null)))).status,503);
+    assert.equal((await f.runtime.handle(dispatched(request({data_env:'dev'},'dev',Buffer.from('{}'))))).status,401);
+    const wrongApp=dispatched(request());wrongApp.headers.set('Base44-App-Id','another-app');
+    assert.equal((await f.runtime.handle(wrongApp)).status,503);
+    assert.equal(f.calls.sql,0);
+    assert.equal((await f.runtime.handle(dispatched(request()))).status,503);
+    assert.equal(f.calls.sql,1);assert.equal(f.calls.crm,0);await f.runtime.close();
+  });
 }

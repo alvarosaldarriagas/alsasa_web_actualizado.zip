@@ -23,7 +23,12 @@ export function createPilotRuntime({ kind, config, ...dependencies } = {}) {
       if (!runtime) return reply(503, 'pilot_paused');
       const url = new URL(request.url);
       const paths = [`/functions/${route}`, `/api/apps/${binding.app}/functions/${route}`];
-      if (!paths.includes(url.pathname)) return reply(404, 'route_not_found');
+      // Hosted Base44 dispatches the selected function at /run/<deployment-id>.
+      // The entrypoint fixes kind; the app/environment and signed logical route
+      // below still authorize every request before any SQL or CRM operation.
+      const dispatched = url.origin === 'https://base44-dispatcher-production.base44.workers.dev'
+        && /^\/run\/[a-f0-9]{32}$/.test(url.pathname);
+      if (!paths.includes(url.pathname) && !dispatched) return reply(404, 'route_not_found');
       if (request.method !== 'POST') return reply(405, 'method_not_allowed');
       if (gatewayDataEnvironment(request.headers) !== 'dev') return reply(503, 'test_data_required');
       // Canonicalize only the verified fixed pilot alias. Preserve the body stream

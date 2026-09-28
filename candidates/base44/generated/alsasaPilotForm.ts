@@ -1076,7 +1076,8 @@ function createPilotRuntime({ kind, config, ...dependencies } = {}) {
       if (!runtime) return reply4(503, "pilot_paused");
       const url = new URL(request.url);
       const paths = [`/functions/${route}`, `/api/apps/${binding.app}/functions/${route}`];
-      if (!paths.includes(url.pathname)) return reply4(404, "route_not_found");
+      const dispatched = url.origin === "https://base44-dispatcher-production.base44.workers.dev" && /^\/run\/[a-f0-9]{32}$/.test(url.pathname);
+      if (!paths.includes(url.pathname) && !dispatched) return reply4(404, "route_not_found");
       if (request.method !== "POST") return reply4(405, "method_not_allowed");
       if (gatewayDataEnvironment(request.headers) !== "dev") return reply4(503, "test_data_required");
       url.pathname = `/functions/${binding.route}`;
