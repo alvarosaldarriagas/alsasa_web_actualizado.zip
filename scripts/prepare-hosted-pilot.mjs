@@ -33,7 +33,7 @@ const sql = [
   `INSERT INTO alsasa_guard_v1.windows(scope,window_id,starts_at,ends_at,subject_limit) VALUES(${quote(scope)},${quote(policy)},${quote(startsAt)},${quote(endsAt)},1),(${quote(ingress)},${quote(policy)},${quote(startsAt)},${quote(endsAt)},3);`,
   `INSERT INTO alsasa_guard_v1.channels(scope,window_id,channel,plan) VALUES(${quote(scope)},${quote(policy)},'web-contact',${quote(JSON.stringify(plan))}::jsonb);`,
   `INSERT INTO alsasa_guard_v1.buckets(scope,window_id,dimension,bucket,cap) VALUES(${quote(scope)},${quote(policy)},'channel','web-contact',1),(${quote(scope)},${quote(policy)},'resource','base44_sdk_attempt',${sdkCap});`,
-  `INSERT INTO alsasa_guard_v1.ingress_limits(scope,window_id,kind,interval_seconds,cap,global_cap,window_cap) VALUES(${quote(ingress)},${quote(policy)},'form',60,3,3,3),(${quote(ingress)},${quote(policy)},'chat',60,0,0,0);`,
+  `INSERT INTO alsasa_guard_v1.ingress_limits(scope,window_id,kind,interval_seconds,cap,global_cap,window_cap) VALUES(${quote(ingress)},${quote(policy)},'form',60,3,3,3);`,
   'COMMIT;',
 ].join('\n');
 const enableSql = `UPDATE alsasa_guard_v1.gate SET enabled=true WHERE scope IN (${quote(scope)},${quote(ingress)}) AND current_window=${quote(policy)};\n`;
