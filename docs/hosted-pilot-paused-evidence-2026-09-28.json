@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-09-28T17:45:43.557Z",
+  "results": [
+    {
+      "origin": "https://share--alsasa-crm-9f762688.base44.app",
+      "name": "alsasaPilotForm",
+      "status": 503,
+      "code": "pilot_paused"
+    },
+    {
+      "origin": "https://share--alsasa-crm-9f762688.base44.app",
+      "name": "alsasaPilotChat",
+      "status": 503,
+      "code": "pilot_paused"
+    },
+    {
+      "origin": "https://alsasa-crm-9f762688.base44.app",
+      "name": "alsasaPilotForm",
+      "status": 503,
+      "code": "pilot_paused"
+    },
+    {
+      "origin": "https://alsasa-crm-9f762688.base44.app",
+      "name": "alsasaPilotChat",
+      "status": 503,
+      "code": "pilot_paused"
+    }
+  ]
+}

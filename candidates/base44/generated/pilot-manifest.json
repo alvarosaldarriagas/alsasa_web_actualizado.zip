@@ -1,0 +1,16 @@
+{
+  "testDataOnly": true,
+  "configuration": "ALSASA_PILOT_CAPTURE_CONFIG",
+  "files": {
+    "alsasaPilotForm": {
+      "kind": "form",
+      "sdk": "0.8.40",
+      "sha256": "90690cd15abf56e5cf3415a3a8d23d4494eed90b65b90ecbaf223dc303e584a7"
+    },
+    "alsasaPilotChat": {
+      "kind": "chat",
+      "sdk": "0.8.25",
+      "sha256": "22a5a9d8c194cf6302c7edbd34d9290b6c0713acb82a944cf0b41e01a3ecd57a"
+    }
+  }
+}

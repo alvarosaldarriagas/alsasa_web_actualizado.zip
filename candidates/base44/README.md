@@ -105,3 +105,11 @@ entrypoints are unchanged. The two generated files remain inactive candidates.
 
 Source hash comparison uses the generator's UTF-8 `trimEnd()` normalization;
 a raw file hash may differ solely because of trailing whitespace.
+
+## Additive Test Data pilot
+
+`build-pilot.mjs` generates separate `alsasaPilotForm` and `alsasaPilotChat`
+entrypoints. They read only `ALSASA_PILOT_CAPTURE_CONFIG`, reject Production
+gateway context, and keep the original capture functions intact. The web's dev
+destination now uses these pilot aliases. The production replacements above remain
+inactive. See `docs/hosted-pilot-plan-2026-09-28.md` for the finite one-delivery plan.

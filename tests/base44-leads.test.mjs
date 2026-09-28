@@ -17,7 +17,7 @@ test('sender signs exact validated bytes and binds channel, operation and policy
   let calls = 0;
   const result = await submitLeadToBase44(lead, context, { env, fetcher: async (url, init) => {
     calls++;
-    assert.equal(url, 'https://share--alsasa-crm-9f762688.base44.app/functions/publicApi');
+    assert.equal(url, 'https://share--alsasa-crm-9f762688.base44.app/functions/alsasaPilotForm');
     assert.equal(init.redirect, 'error'); assert.ok(init.signal);
     const envelope = JSON.parse(init.headers['x-alsasa-envelope']);
     assert.equal(envelope.operation, context.operation); assert.equal(envelope.policy, env.ALSASA_CAPTURE_POLICY);
@@ -51,7 +51,7 @@ test('lost CRM response does not trigger retry', async () => {
 test('chat uses its own schema and signed route', async () => {
   const result = await submitLeadToBase44({ ...lead, messages: [{ role: 'user', content: 'Información' }], property_id: 'A1166' }, { ...context, kind: 'chat' }, {
     env, fetcher: async (url, init) => {
-      assert.ok(url.endsWith('/captureChatLead'));
+      assert.ok(url.endsWith('/alsasaPilotChat'));
       const envelope = JSON.parse(init.headers['x-alsasa-envelope']);
       assert.ok(verifyEnvelope(key, envelope, init.body, CAPTURE_ROUTES.chat, Date.now()));
       const body = JSON.parse(init.body); assert.equal(body.name, lead.full_name); assert.deepEqual(body.qualification.property_ids, ['A1166']);

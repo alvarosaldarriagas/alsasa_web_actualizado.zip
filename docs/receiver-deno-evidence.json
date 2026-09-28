@@ -1,5 +1,5 @@
 {
-  "passed": 12,
+  "passed": 22,
   "runtime": {
     "deno": "2.9.6",
     "v8": "15.0.245.2-rusty",
@@ -54,6 +54,46 @@
     },
     {
       "name": "captureChatLead altered signature is rejected before SQL or CRM",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotForm missing private configuration is paused",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotForm live gateway is blocked",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotForm unsigned Test request cannot reach SQL",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotForm methods other than POST are blocked",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotForm invalid signature cannot reach SQL or CRM",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotChat missing private configuration is paused",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotChat live gateway is blocked",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotChat unsigned Test request cannot reach SQL",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotChat methods other than POST are blocked",
+      "passed": true
+    },
+    {
+      "name": "alsasaPilotChat invalid signature cannot reach SQL or CRM",
       "passed": true
     }
   ]

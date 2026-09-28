@@ -51,6 +51,18 @@ try {
    const r=await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{'content-type':'application/json','x-alsasa-envelope':JSON.stringify(envelope),'Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':'Bearer e30.e30.synthetic_signature_only','Base44-Api-Url':'https://ignored-header.invalid'},body:'{}'}));assert.equal(r.status,401);
   });
  }
+ for (const [name,kind] of [['alsasaPilotForm','form'],['alsasaPilotChat','chat']]) {
+  Deno.env.delete('ALSASA_PILOT_CAPTURE_CONFIG');
+  await import(new URL('../candidates/base44/generated/'+name+'.ts?paused',import.meta.url));
+  await check(name+' missing private configuration is paused',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{method:'POST'}))).status,503));
+  Deno.env.set('ALSASA_PILOT_CAPTURE_CONFIG',JSON.stringify({...config,ALSASA_CAPTURE_DATA_ENV:'dev'}));
+  await import(new URL('../candidates/base44/generated/'+name+'.ts?configured',import.meta.url));
+  const headers={'content-type':'application/json','Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':'Bearer e30.'+Buffer.from(JSON.stringify({data_env:'dev'})).toString('base64url')+'.synthetic_signature_only','X-Data-Env':'dev'};
+  await check(name+' live gateway is blocked',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{...headers,'Base44-Service-Authorization':'Bearer e30.e30.synthetic_signature_only'},body:'{}'}))).status,503));
+  await check(name+' unsigned Test request cannot reach SQL',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers,body:'{}'}))).status,401));
+  await check(name+' methods other than POST are blocked',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{headers}))).status,405));
+  await check(name+' invalid signature cannot reach SQL or CRM',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{...headers,'x-alsasa-envelope':'{}'},body:'{}'}))).status,401));
+ }
  assert.equal(sdkCalls,1);
  console.log(JSON.stringify({passed:results.length,runtime:Deno.version,realCrmCalls:0,localCatalogReads:sdkCalls,results}));
 } finally {stop.abort();await server.finished;Deno.serve=nativeServe;}
