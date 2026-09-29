@@ -208,6 +208,7 @@ var CAPTURE_ROUTES = Object.freeze({
   form: Object.freeze({ app: "68b1e87f22e7326f9f762688", channel: "web-contact", route: "publicApi" }),
   chat: Object.freeze({ app: "68b1e87f22e7326f9f762688", channel: "chat-capture", route: "captureChatLead" })
 });
+var PILOT_CAPTURE_ROUTES = Object.freeze({ form: "alsasaPilotForm", chat: "alsasaPilotChat" });
 
 // candidates/base44/capture-router.mjs
 function createCaptureRouter({ kind, receiver: receiver2, readPublic } = {}) {
@@ -219,7 +220,12 @@ function createCaptureRouter({ kind, receiver: receiver2, readPublic } = {}) {
   return async (request) => {
     if (!binding) return reply4(503, "unconfigured");
     const paths = [`/functions/${binding.route}`, `/api/apps/${binding.app}/functions/${binding.route}`];
-    if (!paths.includes(new URL(request.url).pathname)) return reply4(404, "route_not_found");
+    const url = new URL(request.url);
+    if (!paths.includes(url.pathname)) {
+      if (url.origin !== "https://base44-dispatcher-production.base44.workers.dev" || !/^\/run\/[a-f0-9]{32}$/.test(url.pathname)) return reply4(404, "route_not_found");
+      url.pathname = `/functions/${binding.route}`;
+      request = new Request(url, request);
+    }
     if (["GET", "OPTIONS"].includes(request.method) && kind === "form" && typeof readPublic === "function") return readPublic(request);
     if (request.method !== "POST") return reply4(405, "method_not_allowed");
     if (typeof receiver2?.handle !== "function") return reply4(503, "paused");

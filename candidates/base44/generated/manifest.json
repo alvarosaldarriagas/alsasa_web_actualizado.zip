@@ -4,12 +4,12 @@
     "publicApi": {
       "sdk": "0.8.40",
       "sourceSha256": "c8729d1d1f53a29007997152b9035cb4ae7b7e495139c66fcd332b2c07658e31",
-      "generatedSha256": "1fea2d130681df9c36c2c7bc319d828a4f70ee0415c849ceaf366739d191671a"
+      "generatedSha256": "dde655242e3edce54d2b1c6e910bdea65c13b2359a0073a4eb9c0059c467ba77"
     },
     "captureChatLead": {
       "sdk": "0.8.25",
       "sourceSha256": "2f96428ada4068c7036f9cfe902644dcd2227fb98e38d6e3c7c9e1b65d1c0528",
-      "generatedSha256": "54c21b8d9496ed53077f0958e44492db7aa7b6535c313eb52bd65f88377f78df"
+      "generatedSha256": "552abe16e052a8166198fac3459665a64c9bef5b341f45c2bc115eeb233e9fa9"
     }
   }
 }

@@ -13,6 +13,7 @@ const server = nativeServe({ hostname: '127.0.0.1', port: 0, signal: stop.signal
 Deno.serve = callback => { handler=callback; return {}; };
 const results=[];const check=async(name,fn)=>{await fn();results.push({name,passed:true});console.log('PASS '+name);};
 const signing=randomBytes(32),identity=randomBytes(32),encryption=randomBytes(32);
+const dispatchUrl='https://base44-dispatcher-production.base44.workers.dev/run/'+'a'.repeat(32);
 const config={ALSASA_CAPTURE_ENABLED:'true',ALSASA_CAPTURE_DATA_ENV:'prod',ALSASA_CAPTURE_SCOPE:'pilot',ALSASA_CAPTURE_POLICY:'window',
  ALSASA_CAPTURE_STARTS_AT:new Date(Date.now()-60000).toISOString(),ALSASA_CAPTURE_ENDS_AT:new Date(Date.now()+60000).toISOString(),
  ALSASA_CAPTURE_SIGNING_KEY:signing.toString('hex'),ALSASA_CAPTURE_IDENTITY_KEY:identity.toString('hex'),
@@ -30,6 +31,11 @@ try {
    await check('Catalog GET uses pinned SDK and retains public projection',async()=>{
     const r=await handler(new Request('https://example.invalid/functions/publicApi',{headers:{'Base44-App-Id':CAPTURE_ROUTES.form.app,'Base44-Api-Url':'http://127.0.0.1:'+server.addr.port,'Base44-Service-Authorization':'Bearer synthetic-only'}}));
     assert.equal(r.status,200);const body=await r.json();assert.equal(body.properties[0].title,'Propiedad ficticia');assert.equal(body.properties[0].owner_email,undefined);assert.equal(body.properties[0].internal_notes,undefined);assert.equal(sdkCalls,1);
+   });
+   await check('Hosted catalog dispatch preserves GET filters and OPTIONS while capture is paused',async()=>{
+    assert.equal((await handler(new Request(dispatchUrl,{method:'OPTIONS'}))).status,204);
+    const r=await handler(new Request(dispatchUrl+'?search=absent-property',{headers:{'Base44-App-Id':CAPTURE_ROUTES.form.app,'Base44-Api-Url':'http://127.0.0.1:'+server.addr.port,'Base44-Service-Authorization':'Bearer synthetic-only'}}));
+    assert.equal(r.status,200);assert.deepEqual((await r.json()).properties,[]);assert.equal(sdkCalls,2);
    });
   }
   for(const [k,v]of Object.entries(config))Deno.env.set(k,v);
@@ -50,6 +56,11 @@ try {
    const envelope=signEnvelope(signing,{...CAPTURE_ROUTES[kind],operation:'806c3f81-8d64-4f9c-82a8-b948094f32ab',subject:'a'.repeat(64),policy:'window',expiresAt:Date.now()+30000},bytes);
    const r=await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{'content-type':'application/json','x-alsasa-envelope':JSON.stringify(envelope),'Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':'Bearer e30.e30.synthetic_signature_only','Base44-Api-Url':'https://ignored-header.invalid'},body:'{}'}));assert.equal(r.status,401);
   });
+  await check(name+' hosted dispatch retains signature rejection and blocks foreign dispatch',async()=>{
+   const headers={'content-type':'application/json','x-alsasa-envelope':'{}','Base44-App-Id':CAPTURE_ROUTES[kind].app,'Base44-Service-Authorization':'Bearer e30.e30.synthetic_signature_only'};
+   assert.equal((await handler(new Request(dispatchUrl,{method:'POST',headers,body:'{}'}))).status,401);
+   assert.equal((await handler(new Request('https://example.invalid/run/'+'a'.repeat(32),{method:'POST',headers,body:'{}'}))).status,404);
+  });
  }
  for (const [name,kind] of [['alsasaPilotForm','form'],['alsasaPilotChat','chat']]) {
   Deno.env.delete('ALSASA_PILOT_CAPTURE_CONFIG');
@@ -63,7 +74,7 @@ try {
   await check(name+' methods other than POST are blocked',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{headers}))).status,405));
   await check(name+' invalid signature cannot reach SQL or CRM',async()=>assert.equal((await handler(new Request('https://example.invalid/functions/'+name,{method:'POST',headers:{...headers,'x-alsasa-envelope':'{}'},body:'{}'}))).status,401));
  }
- assert.equal(sdkCalls,1);
+ assert.equal(sdkCalls,2);
  console.log(JSON.stringify({passed:results.length,runtime:Deno.version,realCrmCalls:0,localCatalogReads:sdkCalls,results}));
 } finally {stop.abort();await server.finished;Deno.serve=nativeServe;}
 Deno.exit(0);

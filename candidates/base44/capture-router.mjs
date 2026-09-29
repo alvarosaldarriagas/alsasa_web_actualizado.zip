@@ -9,7 +9,17 @@ export function createCaptureRouter({ kind, receiver, readPublic } = {}) {
   return async request => {
     if (!binding) return reply(503, 'unconfigured');
     const paths = [`/functions/${binding.route}`, `/api/apps/${binding.app}/functions/${binding.route}`];
-    if (!paths.includes(new URL(request.url).pathname)) return reply(404, 'route_not_found');
+    const url = new URL(request.url);
+    if (!paths.includes(url.pathname)) {
+      // Base44 invokes the selected entrypoint through this observed gateway URL.
+      // The entrypoint's fixed kind chooses the logical route; request headers and
+      // body fields cannot choose it. POST still requires app/environment and HMAC
+      // verification below the router, before any SQL admission or CRM operation.
+      if (url.origin !== 'https://base44-dispatcher-production.base44.workers.dev'
+          || !/^\/run\/[a-f0-9]{32}$/.test(url.pathname)) return reply(404, 'route_not_found');
+      url.pathname = `/functions/${binding.route}`;
+      request = new Request(url, request);
+    }
     if (['GET', 'OPTIONS'].includes(request.method) && kind === 'form' && typeof readPublic === 'function') return readPublic(request);
     if (request.method !== 'POST') return reply(405, 'method_not_allowed');
     if (typeof receiver?.handle !== 'function') return reply(503, 'paused');
