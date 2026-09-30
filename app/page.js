@@ -3,7 +3,7 @@ import PropertyFilterCatalog from "@/components/PropertyFilterCatalog";
 import { getProperties } from "@/lib/wp-api";
 
 export default async function Home() {
-  // Conexión real a WordPress de Alsasa
+  // Inventario público de Base44
   const properties = await getProperties();
 
   return (
@@ -50,7 +50,7 @@ export default async function Home() {
           <PropertyFilterCatalog properties={properties} />
         ) : (
           <p style={{ textAlign: 'center', color: 'var(--text-light)', padding: '3rem' }}>
-            Cargando propiedades desde alsasa.co...
+            No hay propiedades disponibles en este momento. Contáctanos para ayudarte.
           </p>
         )}
       </section>
