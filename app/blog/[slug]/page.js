@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
             description: post.excerpt,
             url: `https://www.alsasa.co/blog/${slug}`,
             type: 'article',
-            publishedTime: post.date,
+            publishedTime: post.publishedAt,
             images: post.image ? [{ url: post.image, width: 1200, height: 630, alt: post.title }] : [],
         },
         twitter: {
