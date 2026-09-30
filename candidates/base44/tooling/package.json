@@ -1,0 +1,12 @@
+{
+  "name": "alsasa-receiver-build-tools",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "esbuild": "0.25.12",
+    "deno": "2.9.6",
+    "sdk-public": "npm:@base44/sdk@0.8.40",
+    "sdk-chat": "npm:@base44/sdk@0.8.25",
+    "pg": "8.23.0"
+  }
+}

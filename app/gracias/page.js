@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function GraciasPage({ searchParams }) {
   const params = await searchParams;
-  const success = params?.status !== "error";
+  const success = params?.status === "ok";
 
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "var(--background)" }}>

@@ -1,42 +1,14 @@
+import { protectRequest } from '@/lib/turnstile-guard.mjs';
 import { NextResponse } from 'next/server';
 
 import { getProperties } from '@/lib/wp-api';
 import { submitLeadToBase44 } from '@/lib/base44-leads';
 
-const chatAttempts = new Map();
-const CHAT_WINDOW_MS = 10 * 60 * 1000;
-const MAX_CHAT_ATTEMPTS = 30;
+export const runtime = 'nodejs';
+
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_CONVERSATION_LENGTH = 8000;
-
-function isAllowedOrigin(request) {
-    const origin = request.headers.get('origin');
-    if (!origin) return false;
-
-    try {
-        const { hostname } = new URL(origin);
-        return (
-            hostname === 'alsasa.co' ||
-            hostname === 'www.alsasa.co' ||
-            /^alsasa-[a-z0-9-]+-alvaro-sanchezs-projects-85f656ac\.vercel\.app$/.test(hostname)
-        );
-    } catch {
-        return false;
-    }
-}
-
-function isRateLimited(request) {
-    const forwarded = request.headers.get('x-forwarded-for') || '';
-    const ip = forwarded.split(',')[0].trim() || 'unknown';
-    const now = Date.now();
-    const recent = (chatAttempts.get(ip) || []).filter(
-        (time) => now - time < CHAT_WINDOW_MS
-    );
-    recent.push(now);
-    chatAttempts.set(ip, recent);
-    return recent.length > MAX_CHAT_ATTEMPTS;
-}
 
 function sanitizeMessages(input) {
     if (!Array.isArray(input) || input.length === 0 || input.length > MAX_MESSAGES) {
@@ -124,25 +96,15 @@ function getPropertiesContext(properties) {
 }
 
 export async function POST(req) {
-    if (!isAllowedOrigin(req)) {
-        return NextResponse.json({ error: 'Origen no permitido.' }, { status: 403 });
-    }
-    if (isRateLimited(req)) {
-        return NextResponse.json(
-            { error: 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.' },
-            { status: 429 }
-        );
-    }
-
+  return protectRequest(req, 'chat', async (body, context) => {
     try {
-        const body = await req.json();
         const messages = sanitizeMessages(body.messages);
         if (!messages) {
             return NextResponse.json({ error: 'Conversación inválida.' }, { status: 400 });
         }
 
         if (!process.env.OPENAI_API_KEY) {
-            return NextResponse.json({ reply: 'La clave de OpenAI no está configurada.' });
+            return NextResponse.json({ error: 'El asesor está temporalmente indisponible.' }, { status: 503 });
         }
 
         const properties = await getProperties();
@@ -202,8 +164,10 @@ ${propertiesContext}
             tool_choice: 'auto'
         };
 
-        let response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
+            signal: AbortSignal.timeout(20000),
+            redirect: 'error',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
@@ -216,13 +180,14 @@ ${propertiesContext}
             throw new Error(err.error?.message || 'Error en la conexión con OpenAI');
         }
 
-        let data = await response.json();
-        let message = data.choices[0].message;
+        const data = await response.json();
+        const message = data.choices[0].message;
 
         if (message.tool_calls && message.tool_calls.length > 0) {
             const toolCall = message.tool_calls[0];
 
             if (toolCall.function.name === 'capture_lead') {
+                if (body.contactConsent !== true) return NextResponse.json({ reply: 'Para solicitar que un asesor te contacte, marca la autorización de tratamiento de datos debajo del chat.' });
                 const args = JSON.parse(toolCall.function.arguments);
                 const matchedProperty = resolveProperty(
                     properties,
@@ -243,48 +208,22 @@ ${propertiesContext}
                     source: 'Alsasa AI Chatbot',
                     lead_type: 'chatbot',
                     property_id: matchedProperty.base44Id,
-                    consent: args.consent === true
-                });
+                    consent: body.contactConsent === true && args.consent === true,
+                    messages
+                }, context);
 
                 if (!leadResult.success) {
                     throw new Error(leadResult.error || 'No se pudo registrar el lead en Base44');
                 }
 
-                payload.messages.push(message);
-                payload.messages.push({
-                    role: 'tool',
-                    tool_call_id: toolCall.id,
-                    content: JSON.stringify({
-                        success: true,
-                        property_code: matchedProperty.id,
-                        instruction: 'El cliente, la interacción y la oportunidad asociada a esta propiedad fueron registrados. Confirma el éxito sin mencionar IDs internos.'
-                    })
-                });
-
-                delete payload.tools;
-                delete payload.tool_choice;
-
-                response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error('El lead se registró, pero no se pudo generar la confirmación.');
-                }
-
-                data = await response.json();
-                message = data.choices[0].message;
+                return NextResponse.json({ reply: `Recibimos tu solicitud sobre la propiedad ${matchedProperty.id}. Un asesor se comunicará contigo.` });
             }
         }
 
+        if (typeof message.content !== 'string' || !message.content.trim()) throw new Error('Empty reply');
         return NextResponse.json({ reply: message.content });
     } catch (error) {
-        console.error('Error OpenAI AI:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: 'No pudimos completar la consulta. Si solicitaste contacto, confirma por WhatsApp antes de reenviar.' }, { status: 502 });
     }
+  });
 }

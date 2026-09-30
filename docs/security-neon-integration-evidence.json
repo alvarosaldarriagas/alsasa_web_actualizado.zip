@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-20T01:41:33.528Z",
+  "project": "green-recipe-32463242",
+  "branch": "br-fragrant-frog-aun1tbvl",
+  "scope": "web-8526a307-648c-4d7e-b560-aa17b4b0341b",
+  "crmScope": "crm-60ed8fa6-cc34-4608-81a3-536da4e008c1",
+  "passed": 15,
+  "tests": [
+    {
+      "name": "Missing global configuration fails closed",
+      "passed": true
+    },
+    {
+      "name": "A repeated operation is denied after reconnecting the adapter",
+      "passed": true
+    },
+    {
+      "name": "Per-subject rolling cap is shared by connections",
+      "passed": true
+    },
+    {
+      "name": "Ten different IP subjects consume only two remaining global slots",
+      "passed": true
+    },
+    {
+      "name": "Window cap still stops requests after the rolling interval has elapsed",
+      "passed": true
+    },
+    {
+      "name": "Channels have separate configured quotas and operation IDs remain unique",
+      "passed": true
+    },
+    {
+      "name": "Web role cannot read ciphertext, change gates, or call commercial admission",
+      "passed": true
+    },
+    {
+      "name": "Web role cannot consume a scope owned by a different admission role",
+      "passed": true
+    },
+    {
+      "name": "Form runs web admission, signed encrypted capture and full commercial receipt",
+      "passed": true
+    },
+    {
+      "name": "Chat uses its own signed route and creates a conversation",
+      "passed": true
+    },
+    {
+      "name": "Concurrent replay reaches the verifier and commercial writes just once",
+      "passed": true
+    },
+    {
+      "name": "Unsigned direct POST fails before any CRM call; catalog GET still delegates",
+      "passed": true
+    },
+    {
+      "name": "Altered signed body fails before any CRM call",
+      "passed": true
+    },
+    {
+      "name": "Lost CRM response remains unconfirmed and the same operation cannot retry",
+      "passed": true
+    },
+    {
+      "name": "Disabled ingress gate stops before provider or CRM",
+      "passed": true
+    }
+  ],
+  "migrationApplied": true,
+  "testGatesAndLoginsClosed": true,
+  "crm": "simulated",
+  "cloudflare": "simulated",
+  "productionChanged": false,
+  "endpointStateAfterTest": "idle",
+  "base44Checkpoint": "6aaf3b1044950291e22163f0",
+  "base44CheckpointCommit": "4dacaf500c176d7bb29963364d452ce1278a3efc"
+}

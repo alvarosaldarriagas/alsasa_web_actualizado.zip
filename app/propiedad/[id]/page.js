@@ -1,3 +1,4 @@
+import ProtectedLeadForm from '@/components/ProtectedLeadForm';
 import Navbar from "@/components/Navbar";
 import { getPropertyById } from "@/lib/wp-api";
 import { normalizePropertyCode } from "@/lib/base44-api";
@@ -155,7 +156,7 @@ export default async function PropertyPage({ params }) {
                         <h3 style={{ fontSize: '1.6rem', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)' }}>¿Te interesa esta propiedad?</h3>
                         <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '0.95rem' }}>Deja tus datos y un agente especialista de Alsasa te contactará al instante.</p>
 
-                        <form action="/api/leads" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                        <ProtectedLeadForm style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                             <input type="hidden" name="source" value="web_property" />
                             <input type="hidden" name="lead_type" value="interes_propiedad" />
                             <input type="hidden" name="property_id" value={property.base44Id || property.id} />
@@ -174,7 +175,7 @@ export default async function PropertyPage({ params }) {
                                 O escríbenos directamente a nuestro <br />
                                 <a href={`https://wa.me/573134321523?text=${encodeURIComponent(`Hola equipo Alsasa, vengo de su página web y estoy interesado en el inmueble: ${property.title}. ¿Podrían darme más información?`)}`} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', fontWeight: 'bold', textDecoration: 'underline' }}>WhatsApp: +57 313 432 1523</a>
                             </div>
-                        </form>
+                        </ProtectedLeadForm>
                     </div>
                 </div>
 

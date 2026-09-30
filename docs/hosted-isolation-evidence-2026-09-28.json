@@ -1,0 +1,217 @@
+{
+  "checkedOn": "2026-09-28",
+  "appId": "68b1e87f22e7326f9f762688",
+  "testingOrigin": "https://share--alsasa-crm-9f762688.base44.app",
+  "testingLink": [
+    {
+      "checkedAt": "2026-09-28T17:05:51.418Z",
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "redirectOrigin": null,
+      "redirectPath": null,
+      "validCatalog": false,
+      "count": null,
+      "bodyBytes": 13661,
+      "title": "Base44 APP",
+      "catalogFingerprint": null
+    },
+    {
+      "checkedAt": "2026-09-28T17:05:52.079Z",
+      "path": "/functions/publicApi?action=list",
+      "status": 200,
+      "contentType": "application/json",
+      "redirectOrigin": null,
+      "redirectPath": null,
+      "validCatalog": true,
+      "count": 0,
+      "bodyBytes": 27,
+      "catalogFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ],
+  "gateway": {
+    "checkedAt": "2026-09-28T17:08:54.020Z",
+    "results": [
+      {
+        "host": "share--alsasa-crm-9f762688.base44.app",
+        "status": 200,
+        "result": {
+          "diagnostic": "alsasa-read-only-gateway-20260928",
+          "appMatches": true,
+          "hasServiceCredential": true,
+          "dataHeader": "dev",
+          "decodedEnvironmentClaims": {
+            "data_env": "dev"
+          },
+          "claimSignatureVerifiedHere": false,
+          "requestHost": "base44-dispatcher-production.base44.workers.dev",
+          "pinnedImportsReady": true,
+          "effects": {
+            "entityReads": 0,
+            "entityWrites": 0,
+            "integrations": 0
+          }
+        }
+      },
+      {
+        "host": "alsasa-crm-9f762688.base44.app",
+        "status": 200,
+        "result": {
+          "diagnostic": "alsasa-read-only-gateway-20260928",
+          "appMatches": true,
+          "hasServiceCredential": true,
+          "dataHeader": null,
+          "decodedEnvironmentClaims": {},
+          "claimSignatureVerifiedHere": false,
+          "requestHost": "base44-dispatcher-production.base44.workers.dev",
+          "pinnedImportsReady": true,
+          "effects": {
+            "entityReads": 0,
+            "entityWrites": 0,
+            "integrations": 0
+          }
+        }
+      }
+    ]
+  },
+  "boundedSdkReads": {
+    "checkedAt": "2026-09-28T17:10:54.297Z",
+    "results": [
+      {
+        "authorized": true,
+        "status": 200,
+        "result": {
+          "diagnostic": "alsasa-read-only-gateway-20260928",
+          "appMatches": true,
+          "hasServiceCredential": true,
+          "dataHeader": "dev",
+          "decodedEnvironmentClaims": {
+            "data_env": "dev"
+          },
+          "claimSignatureVerifiedHere": false,
+          "requestHost": "base44-dispatcher-production.base44.workers.dev",
+          "pinnedImportsReady": true,
+          "sdkReadResults": [
+            {
+              "sdk": "0.8.40",
+              "ok": true,
+              "count": 0
+            },
+            {
+              "sdk": "0.8.25",
+              "ok": true,
+              "count": 0
+            }
+          ],
+          "effects": {
+            "entityReadAttempts": 2,
+            "entityWrites": 0,
+            "integrations": 0
+          }
+        }
+      },
+      {
+        "authorized": false,
+        "status": 404,
+        "result": {
+          "code": "unavailable"
+        }
+      }
+    ]
+  },
+  "marker": {
+    "name": "ALSASA_TEST_ISOLATION_20260928_78f3daf9d07c",
+    "productionBefore": {
+      "entities": [],
+      "count": 0,
+      "entityName": "IntegrationStatus"
+    },
+    "create": {
+      "checkedAt": "2026-09-28T17:13:19.481Z",
+      "status": 201,
+      "result": {
+        "diagnostic": "alsasa-test-marker-20260928",
+        "created": true
+      }
+    },
+    "testRead": {
+      "checkedAt": "2026-09-28T17:13:37.627Z",
+      "status": 200,
+      "result": {
+        "diagnostic": "alsasa-read-only-gateway-20260928",
+        "appMatches": true,
+        "hasServiceCredential": true,
+        "dataHeader": "dev",
+        "decodedEnvironmentClaims": {
+          "data_env": "dev"
+        },
+        "claimSignatureVerifiedHere": false,
+        "requestHost": "base44-dispatcher-production.base44.workers.dev",
+        "pinnedImportsReady": true,
+        "sdkReadResults": [
+          {
+            "sdk": "0.8.40",
+            "ok": true,
+            "count": 0,
+            "markerCount": 1
+          },
+          {
+            "sdk": "0.8.25",
+            "ok": true,
+            "count": 0,
+            "markerCount": 1
+          }
+        ],
+        "effects": {
+          "entityReadAttempts": 4,
+          "entityWrites": 0,
+          "integrations": 0
+        }
+      }
+    },
+    "productionAfter": {
+      "entities": [],
+      "count": 0,
+      "entityName": "IntegrationStatus"
+    },
+    "cleanup": {
+      "checkedAt": "2026-09-28T17:13:56.719Z",
+      "status": 200,
+      "result": {
+        "diagnostic": "alsasa-test-marker-20260928",
+        "deleted": true,
+        "remaining": 0
+      }
+    }
+  },
+  "retired": {
+    "results": [
+      {
+        "host": "share--alsasa-crm-9f762688.base44.app",
+        "status": 410,
+        "retired": true
+      },
+      {
+        "host": "alsasa-crm-9f762688.base44.app",
+        "status": 410,
+        "retired": true
+      }
+    ],
+    "keyRemoved": true
+  },
+  "limits": {
+    "businessContactWrites": 0,
+    "productionRecordWrites": 0,
+    "emails": 0,
+    "llmCalls": 0,
+    "automationsEnabled": 0,
+    "testMarkerCreates": 1,
+    "testMarkerDeletes": 1
+  },
+  "notYetVerified": [
+    "full signed receiver with hosted Neon configuration",
+    "real server-side Turnstile validation",
+    "web form end-to-end delivery",
+    "post-diagnostic credit delta"
+  ]
+}
