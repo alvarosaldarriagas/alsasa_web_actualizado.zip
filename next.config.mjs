@@ -21,6 +21,8 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      { source: '/propiedades', destination: '/#propiedades', permanent: true },
+      { source: '/contacto', destination: '/#contacto', permanent: true },
       {
         source: '/category/:path*',
         destination: '/',
