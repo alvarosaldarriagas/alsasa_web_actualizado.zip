@@ -65,7 +65,7 @@ test('chat confirms a delayed capture without a second AI request', async (t) =>
   });
   const response = await POST(new Request('https://alsasa.co/api/chat', {
     method: 'POST', headers: { origin: 'https://alsasa.co', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: [{ role: 'user', content: 'Prueba local autorizada' }] })
+    body: JSON.stringify({ capture_consent: true, messages: [{ role: 'user', content: 'Prueba local autorizada' }] })
   }));
   const result = await response.json();
   assert.equal(response.status, 200);
@@ -73,4 +73,29 @@ test('chat confirms a delayed capture without a second AI request', async (t) =>
   assert.match(result.reply, /A1149/);
   assert.equal(aiCalls, 1);
   assert.equal(crmCalls, 1);
+});
+
+
+test('model consent cannot authorize CRM writes', async (t) => {
+  let source = await readFile(new URL('../app/api/chat/route.js', import.meta.url), 'utf8');
+  source = source.replace("import { NextResponse } from 'next/server';", 'const NextResponse = Response;')
+    .replace("import { getProperties } from '@/lib/wp-api';", "const getProperties = async () => [{ id: 'A1149', base44Id: 'local-property' }];")
+    .replace("import { submitLeadToBase44 } from '@/lib/base44-leads';", "const submitLeadToBase44 = () => { throw new Error('CRM must not be called'); };");
+  const { POST } = await import(moduleUrl(source));
+  const previous = process.env.OPENAI_API_KEY;
+  process.env.OPENAI_API_KEY = 'local-test-only';
+  t.after(() => { if (previous === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = previous; });
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ choices: [{ message: { tool_calls: [{ function: {
+    name: 'capture_lead', arguments: JSON.stringify({ ...input, consent: true, property_reference: 'A1149' })
+  } }] } }] }));
+  for (const consent of [undefined, false, 'true', 1, null]) {
+    const response = await POST(new Request('https://alsasa.co/api/chat', {
+      method: 'POST', headers: { origin: 'https://alsasa.co' },
+      body: JSON.stringify({ capture_consent: consent, messages: [{ role: 'user', content: 'Quiero contacto para A1149' }] })
+    }));
+    assert.equal(response.status, 200);
+    const data = await response.json();
+    assert.equal(data.captured, false);
+    assert.equal(data.requires_consent, true);
+  }
 });
