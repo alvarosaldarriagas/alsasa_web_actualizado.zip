@@ -139,6 +139,7 @@ export async function POST(req) {
     try {
         const body = await req.json();
         const messages = sanitizeMessages(body.messages);
+        const captureConsent = body.capture_consent === true;
         if (!messages) {
             return NextResponse.json({ error: 'Conversación inválida.' }, { status: 400 });
         }
@@ -164,6 +165,9 @@ export async function POST(req) {
 
 ${propertiesContext}
 
+## Autorización de contacto:
+${captureConsent ? 'El visitante marcó la casilla de autorización para guardar sus datos y contactarlo.' : 'El visitante NO marcó la casilla de autorización. Puedes responder consultas de propiedades, pero no registrar solicitudes. Si pide contacto, indícale que marque la casilla debajo del chat y envíe un mensaje para continuar.'}
+
 ## Instrucciones:
 - Cuando el cliente pregunte por propiedades, responde con información ESPECÍFICA del inventario anterior.
 - Si el cliente quiere contacto humano, solicita **Nombre, correo, teléfono y autorización para tratar sus datos**. Usa \`capture_lead\` únicamente cuando entregue los cuatro.
@@ -186,10 +190,9 @@ ${propertiesContext}
                             email: { type: 'string', description: 'Correo electrónico del cliente' },
                             phone: { type: 'string', description: 'Número de teléfono del cliente' },
                             property_reference: { type: 'string', description: 'Código comercial exacto de la propiedad, por ejemplo A1160' },
-                            property_interest: { type: 'string', description: 'Nombre o detalles de la propiedad en la que el cliente mostró interés' },
-                            consent: { type: 'boolean', description: 'Debe ser true solo si el cliente autorizó expresamente el tratamiento de datos' }
+                            property_interest: { type: 'string', description: 'Nombre o detalles de la propiedad en la que el cliente mostró interés' }
                         },
-                        required: ['name', 'email', 'phone', 'property_reference', 'property_interest', 'consent']
+                        required: ['name', 'email', 'phone', 'property_reference', 'property_interest']
                     }
                 }
             }
@@ -226,6 +229,14 @@ ${propertiesContext}
             const toolCall = message.tool_calls[0];
 
             if (toolCall.function.name === 'capture_lead') {
+                // Consent comes from a separate explicit UI action, never model arguments.
+                if (!captureConsent) {
+                    return NextResponse.json({
+                        reply: 'Para guardar tus datos y pedir que un asesor te contacte, marca la casilla de autorización debajo del chat y envía un mensaje para continuar. Puedes seguir consultando propiedades sin autorizar.',
+                        captured: false,
+                        requires_consent: true
+                    });
+                }
                 const args = JSON.parse(toolCall.function.arguments);
                 const matchedProperty = resolveProperty(
                     properties,
@@ -242,11 +253,11 @@ ${propertiesContext}
                     full_name: args.name,
                     email: args.email,
                     phone: args.phone,
-                    message: args.property_interest,
+                    message: `${String(args.property_interest || '').slice(0, 1200)}\nAutorización de contacto: casilla del chat aceptada; texto versión 2026-10-02.`,
                     source: 'Alsasa AI Chatbot',
                     lead_type: 'chatbot',
                     property_id: matchedProperty.base44Id,
-                    consent: args.consent === true
+                    consent: captureConsent
                 });
 
                 if (!leadResult.success) {

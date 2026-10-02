@@ -8,6 +8,7 @@ export default function ChatWidget() {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [captureConsent, setCaptureConsent] = useState(false);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -32,7 +33,7 @@ export default function ChatWidget() {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: newMessages }),
+                body: JSON.stringify({ messages: newMessages, capture_consent: captureConsent }),
                 signal: AbortSignal.timeout(95000)
             });
             const data = await res.json();
@@ -119,6 +120,12 @@ export default function ChatWidget() {
                         )}
                         <div ref={messagesEndRef} />
                     </div>
+
+                    <label style={{ display: 'flex', gap: '8px', padding: '12px 18px', fontSize: '0.8rem', lineHeight: 1.4, color: '#333', backgroundColor: 'white' }}>
+                        <input type="checkbox" checked={captureConsent} disabled={isLoading}
+                            onChange={(e) => setCaptureConsent(e.target.checked)} />
+                        Autorizo a ALSASA Inmobiliaria a guardar mis datos y contactarme para responder esta solicitud. Puedes consultar propiedades sin marcar esta casilla.
+                    </label>
 
                     {/* Input Área */}
                     <form onSubmit={sendMessage} style={{ padding: '1.2rem', backgroundColor: 'white', borderTop: '1px solid #f0f0f0', display: 'flex', gap: '10px' }}>
