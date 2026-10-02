@@ -20,7 +20,7 @@ export default function ChatWidget() {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!input.trim() || isLoading) return;
 
         const userMessage = input;
         const newMessages = [...messages, { role: 'user', content: userMessage }];
@@ -32,13 +32,18 @@ export default function ChatWidget() {
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: newMessages })
+                body: JSON.stringify({ messages: newMessages }),
+                signal: AbortSignal.timeout(95000)
             });
             const data = await res.json();
 
+            if (!res.ok || typeof data.reply !== 'string' || !data.reply.trim()) {
+                throw new Error('Respuesta no confirmada');
+            }
+
             setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
         } catch (error) {
-            setMessages([...newMessages, { role: 'assistant', content: 'Disculpa, ocurrió un error en mis circuitos. Por favor intenta de nuevo en unos minutos.' }]);
+            setMessages([...newMessages, { role: 'assistant', content: 'No pudimos confirmar la respuesta. Si enviaste tus datos, consulta con ALSASA por WhatsApp antes de repetir la solicitud.' }]);
         } finally {
             setIsLoading(false);
         }
@@ -142,3 +147,4 @@ export default function ChatWidget() {
         </div>
     );
 }
+
