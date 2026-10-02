@@ -1,14 +1,16 @@
 import Navbar from "@/components/Navbar";
 import { getPropertyById } from "@/lib/wp-api";
 import { normalizePropertyCode } from "@/lib/base44-api";
-import Link from 'next/link';
 import Image from 'next/image';
-import { permanentRedirect } from 'next/navigation';
+import { permanentRedirect, notFound } from 'next/navigation';
 export async function generateMetadata({ params }) {
     const { id } = await params;
     const property = await getPropertyById(normalizePropertyCode(id));
 
-    if (!property) return { title: 'Propiedad no encontrada | Alsasa Inmobiliaria' };
+    if (!property) return {
+        title: 'Propiedad no disponible | Alsasa Inmobiliaria',
+        robots: { index: false, follow: false },
+    };
 
     const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(property.id)}`;
 
@@ -46,21 +48,7 @@ export default async function PropertyPage({ params }) {
         ? `https://alsasa.co/propiedad/${encodeURIComponent(property.id)}`
         : `https://alsasa.co/propiedad/${encodeURIComponent(id)}`;
 
-    if (!property) {
-        return (
-            <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
-                <Navbar />
-                <div style={{ padding: '10rem 2rem', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '2rem', color: 'var(--primary)', margin: '1rem' }}>Propiedad no encontrada</h2>
-                    <p style={{ color: 'var(--text-light)', marginBottom: '2rem' }}>Ocurrió un error o esta propiedad fue retirada.</p>
-                    <Link href="/" style={{ color: 'white', backgroundColor: 'var(--secondary)', padding: '0.8rem 1.5rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold' }}>
-                        Volver al catálogo
-                    </Link>
-                </div>
-            </main>
-        );
-    }
-
+    if (!property) notFound();
     return (
         <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Navbar />
