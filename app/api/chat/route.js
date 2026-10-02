@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { getProperties } from '@/lib/wp-api';
 import { submitLeadToBase44 } from '@/lib/base44-leads';
 
+export const maxDuration = 90;
+
 const chatAttempts = new Map();
 const CHAT_WINDOW_MS = 10 * 60 * 1000;
 const MAX_CHAT_ATTEMPTS = 30;
@@ -208,7 +210,8 @@ ${propertiesContext}
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(35000)
         });
 
         if (!response.ok) {
@@ -250,41 +253,19 @@ ${propertiesContext}
                     throw new Error(leadResult.error || 'No se pudo registrar el lead en Base44');
                 }
 
-                payload.messages.push(message);
-                payload.messages.push({
-                    role: 'tool',
-                    tool_call_id: toolCall.id,
-                    content: JSON.stringify({
-                        success: true,
-                        property_code: matchedProperty.id,
-                        instruction: 'El cliente, la interacción y la oportunidad asociada a esta propiedad fueron registrados. Confirma el éxito sin mencionar IDs internos.'
-                    })
+                // Confirm directly after the CRM acknowledgment. A second AI request
+                // must never turn a completed capture into an apparent failure.
+                return NextResponse.json({
+                    reply: `Recibimos tu solicitud sobre la propiedad ${matchedProperty.id}. Un asesor de ALSASA te contactará.`,
+                    captured: true
                 });
-
-                delete payload.tools;
-                delete payload.tool_choice;
-
-                response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error('El lead se registró, pero no se pudo generar la confirmación.');
-                }
-
-                data = await response.json();
-                message = data.choices[0].message;
             }
         }
 
         return NextResponse.json({ reply: message.content });
     } catch (error) {
         console.error('Error OpenAI AI:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: 'No pudimos confirmar la respuesta. Si enviaste tus datos, consulta con ALSASA por WhatsApp antes de repetir la solicitud.' }, { status: 500 });
     }
 }
+

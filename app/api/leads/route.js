@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { submitLeadToBase44 } from "@/lib/base44-leads";
 
+export const maxDuration = 60;
+
 const attempts = new Map();
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
@@ -65,3 +67,4 @@ export async function POST(request) {
     return NextResponse.redirect(new URL("/gracias?status=error", request.url), 303);
   }
 }
+
