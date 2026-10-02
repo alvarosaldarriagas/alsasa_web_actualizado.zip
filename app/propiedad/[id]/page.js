@@ -7,7 +7,10 @@ export async function generateMetadata({ params }) {
     const { id } = await params;
     const property = await getPropertyById(normalizePropertyCode(id));
 
-    if (!property) notFound();
+    if (!property) return {
+        title: 'Propiedad no disponible | Alsasa Inmobiliaria',
+        robots: { index: false, follow: false },
+    };
 
     const canonicalUrl = `https://alsasa.co/propiedad/${encodeURIComponent(property.id)}`;
 
