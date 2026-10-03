@@ -2,21 +2,23 @@ import Navbar from "@/components/Navbar";
 import { getPosts } from "@/lib/wp-api";
 import Link from 'next/link';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
     const posts = await getPosts();
     const post = posts.find(p => p.slug === slug);
 
-    if (!post) return { title: 'Artículo no encontrado | Blog Alsasa' };
+    if (!post) notFound();
 
     return {
         title: `${post.title} | Blog Alsasa Inmobiliaria`,
+        alternates: { canonical: `https://alsasa.co/blog/${encodeURIComponent(post.slug)}` },
         description: post.excerpt,
         openGraph: {
             title: post.title,
             description: post.excerpt,
-            url: `https://www.alsasa.co/blog/${slug}`,
+            url: `https://alsasa.co/blog/${slug}`,
             type: 'article',
             publishedTime: post.publishedAt,
             images: post.image ? [{ url: post.image, width: 1200, height: 630, alt: post.title }] : [],
@@ -37,19 +39,7 @@ export default async function BlogPostPage({ params }) {
     const posts = await getPosts();
     const post = posts.find(p => p.slug === slug);
 
-    if (!post) {
-        return (
-            <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
-                <Navbar />
-                <div style={{ padding: '10rem 2rem', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '1rem' }}>Artículo no encontrado</h2>
-                    <Link href="/blog" style={{ color: 'white', backgroundColor: 'var(--secondary)', padding: '0.8rem 1.5rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold' }}>
-                        Volver al Blog
-                    </Link>
-                </div>
-            </main>
-        );
-    }
+    if (!post) notFound();
 
     return (
         <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
@@ -67,7 +57,7 @@ export default async function BlogPostPage({ params }) {
                         "author": [{
                             "@type": "Organization",
                             "name": "Alsasa Inmobiliaria",
-                            "url": "https://www.alsasa.co"
+                            "url": "https://alsasa.co"
                         }]
                     })
                 }}

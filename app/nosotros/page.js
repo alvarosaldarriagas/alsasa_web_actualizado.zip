@@ -3,13 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata = {
+    alternates: { canonical: 'https://alsasa.co/nosotros' },
     title: 'Sobre Nosotros | Alsasa Inmobiliaria Medellín',
     description: 'Conoce la historia, valores y el equipo detrás de Alsasa Inmobiliaria. Más de 10 años de experiencia asesorando inversiones en bienes raíces en Colombia.',
     keywords: ['nosotros alsasa', 'agencia inmobiliaria medellin', 'historia alsasa', 'asesores bienes raíces antioquia'],
     openGraph: {
         title: 'Sobre Nosotros | Alsasa Inmobiliaria Medellín',
         description: 'Conoce la historia, valores y el equipo detrás de Alsasa Inmobiliaria.',
-        url: 'https://www.alsasa.co/nosotros',
+        url: 'https://alsasa.co/nosotros',
         type: 'website',
     }
 };
