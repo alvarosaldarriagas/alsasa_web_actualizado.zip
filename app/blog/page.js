@@ -3,13 +3,14 @@ import { getPosts } from "@/lib/wp-api";
 import Link from 'next/link';
 import Image from 'next/image';
 export const metadata = {
+    alternates: { canonical: 'https://alsasa.co/blog' },
     title: 'Blog Inmobiliario | Alsasa Inmobiliaria Medellín',
     description: 'Guías, noticias del mercado inmobiliario y consejos expertos para comprar, vender o arrendar tu hogar ideal en Medellín y Antioquia.',
     keywords: ['blog inmobiliario', 'noticias bienes raíces colombia', 'consejos para comprar casa', 'mercado inmobiliario medellín'],
     openGraph: {
         title: 'Blog Inmobiliario | Alsasa Inmobiliaria Medellín',
         description: 'Guías, noticias del mercado inmobiliario y consejos expertos para comprar, vender o arrendar tu hogar ideal en Medellín y Antioquia.',
-        url: 'https://www.alsasa.co/blog',
+        url: 'https://alsasa.co/blog',
         type: 'website',
     }
 };
