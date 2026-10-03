@@ -59,6 +59,7 @@ export default function PropertyFilterCatalog({ properties }) {
                 />
                 
                 <select 
+                    aria-label="Rango de precio"
                     value={priceRange} 
                     onChange={(e) => setPriceRange(e.target.value)}
                     style={{ padding: '0.8rem 1.2rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', backgroundColor: '#f8fafc', fontSize: '1rem', cursor: 'pointer' }}
@@ -70,6 +71,7 @@ export default function PropertyFilterCatalog({ properties }) {
                 </select>
 
                 <select 
+                    aria-label="Número mínimo de habitaciones"
                     value={minBeds} 
                     onChange={(e) => setMinBeds(e.target.value)}
                     style={{ padding: '0.8rem 1.2rem', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', backgroundColor: '#f8fafc', fontSize: '1rem', cursor: 'pointer' }}
