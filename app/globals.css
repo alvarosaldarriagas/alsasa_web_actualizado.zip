@@ -239,3 +239,12 @@ button {
     padding: 2rem 1.5rem !important;
   }
 }
+/* Keep narrow screens within their viewport without hiding overflow. */
+.responsive-grid > * { min-width: 0; }
+form input:not([type="checkbox"]), form textarea { min-width: 0; width: 100%; }
+@media (max-width: 768px) {
+  .home-contact { padding: 3rem 1.5rem !important; }
+  .contact-card { padding: 1.5rem !important; }
+  .filter-bar input, .filter-bar select { min-width: 0 !important; width: 100%; max-width: 100%; }
+  .property-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; overflow-wrap: anywhere; }
+}

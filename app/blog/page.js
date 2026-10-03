@@ -34,7 +34,7 @@ export default async function BlogPage() {
 
             {/* Grid de Artículos */}
             <section className="blog-grid-section" style={{ padding: '5rem 4rem', maxWidth: '1200px', margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '3rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '3rem' }}>
                     {posts.length > 0 ? posts.map(post => (
                         <article key={post.id} style={{ backgroundColor: 'var(--surface)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column' }}>
                             <Link href={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%' }}>

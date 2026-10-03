@@ -1,4 +1,5 @@
 import withPWAInit from 'next-pwa';
+import legacyRedirects from './data/legacy-redirects.mjs';
 
 const withPWA = withPWAInit({
   dest: 'public',
@@ -21,6 +22,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      ...legacyRedirects,
       { source: '/propiedades', destination: '/#propiedades', permanent: true },
       { source: '/contacto', destination: '/#contacto', permanent: true },
       {
