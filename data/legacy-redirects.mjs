@@ -1,5 +1,4 @@
-// Exact paths and property codes from the WordPress export captured 2026-09-30.
-// Conflicting codes and unavailable properties are deliberately excluded.
+// Exact historical WordPress paths reconciled with Base44. No availability is restored by redirects.
 export default [
   {
     "source": "/propiedad/cabana-en-venta-via-principal-sopetran-2",
@@ -294,6 +293,51 @@ export default [
   {
     "source": "/por-que-es-importante-contratar-una-inmobiliaria",
     "destination": "/blog/por-que-es-importante-contratar-una-inmobiliaria",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/finca-en-venta-en-venecia-antioquia",
+    "destination": "/propiedad/A1162",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/casa-finca-en-venta-venecia-antioquia",
+    "destination": "/propiedad/A1158",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/apartamento-en-venta-barrio-senorial-envigado",
+    "destination": "/propiedad/A1146",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/casa-finca-amoblada-en-arriendo-vereda-sajonia-rionegro",
+    "destination": "/propiedad/A1141",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/lote-58-en-venta-vereda-santana",
+    "destination": "/propiedad/A1157",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/apartamento-en-venta-sector-suamericana",
+    "destination": "/propiedad/A1156",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/apartamento-en-venta-belen-las-palmas",
+    "destination": "/propiedad/A1109",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/apartamento-en-venta-en-marinilla",
+    "destination": "/propiedad/A1152",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/casa-prado-centro",
+    "destination": "/propiedad/A1069",
     "permanent": true
   }
 ];
