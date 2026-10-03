@@ -56,7 +56,7 @@ export default async function Home() {
       </section>
 
       <section id="contacto" className="home-contact" style={{ padding: '6rem 4rem', backgroundColor: 'var(--background)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', backgroundColor: 'var(--surface)', padding: '3rem', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)' }}>
+        <div className="contact-card" style={{ maxWidth: '800px', margin: '0 auto', backgroundColor: 'var(--surface)', padding: '3rem', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <h2 style={{ fontSize: '2.5rem', color: 'var(--primary)', marginBottom: '1rem' }}>Contactar un Asesor</h2>
             <p style={{ color: 'var(--text-light)', fontSize: '1.1rem' }}>Déjanos tus datos y un especialista de Alsasa Inmobiliaria se comunicará contigo a la mayor brevedad posible.</p>
@@ -68,7 +68,7 @@ export default async function Home() {
               <input type="hidden" name="lead_type" value="contacto_general" />
               <input type="text" name="website" tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.5rem' }}>
                   <input type="text" name="full_name" placeholder="Nombre completo *" required style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
                   <input type="tel" name="phone" placeholder="Teléfono / Celular *" required style={{ padding: '1.2rem', borderRadius: '8px', border: '1px solid #eaeaea', fontSize: '1rem', outline: 'none', backgroundColor: '#f9fafb' }} />
               </div>

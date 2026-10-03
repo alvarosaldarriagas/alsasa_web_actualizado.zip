@@ -172,7 +172,7 @@ export default async function PropertyPage({ params }) {
             {property.gallery && property.gallery.length > 0 && (
                 <section className="mobile-padding" style={{ maxWidth: '1200px', margin: '4rem auto 8rem', padding: '0 2rem' }}>
                     <h2 style={{ fontSize: '2.6rem', marginBottom: '2.5rem', color: 'var(--primary)', fontFamily: 'var(--font-serif)', textAlign: 'center' }}>Galería del Inmueble</h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
                         {property.gallery.map((url, index) => {
                             if (url.endsWith('.mp4') || url.endsWith('.mov')) {
                                 return (
