@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-
 :root {
   --primary: #0D47A1;
   --secondary: #E67E22;
@@ -8,8 +6,8 @@
   --text: #2C3E50;
   --text-light: #546E7A;
 
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Playfair Display', serif;
+  --font-sans: var(--font-inter), sans-serif;
+  --font-serif: var(--font-playfair), serif;
 
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(255, 255, 255, 0.4);
@@ -247,4 +245,11 @@ form input:not([type="checkbox"]), form textarea { min-width: 0; width: 100%; }
   .contact-card { padding: 1.5rem !important; }
   .filter-bar input, .filter-bar select { min-width: 0 !important; width: 100%; max-width: 100%; }
   .property-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; overflow-wrap: anywhere; }
+}
+
+/* Keep the complete commercial price readable on narrow screens. */
+.property-price { white-space: nowrap; overflow-wrap: normal; }
+@media (max-width: 768px) {
+  .property-stats-grid > .property-price-stat { grid-column: 1 / -1; }
+  .property-price { font-size: clamp(1.25rem, 6vw, 1.8rem) !important; }
 }

@@ -79,7 +79,7 @@ export default async function PropertyPage({ params }) {
                 backgroundColor: '#1a1a1a'
             }}>
                 {property.image && (
-                    <Image src={property.image} alt={property.title} fill style={{ objectFit: 'cover' }} priority sizes="100vw" />
+                    <Image src={property.image} alt={property.title} fill style={{ objectFit: 'cover' }} loading="eager" fetchPriority="high" sizes="100vw" />
                 )}
                 <div style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -112,9 +112,9 @@ export default async function PropertyPage({ params }) {
                 {/* Lado Izquierdo: Descripción */}
                 <div>
                     <div className="responsive-grid two-cols-even property-stats-grid" style={{ gap: '1rem', marginBottom: '3rem', padding: '2rem', backgroundColor: 'var(--surface)', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="property-price-stat" style={{ textAlign: 'center' }}>
                             <h3 style={{ color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Precio Base</h3>
-                            <p style={{ color: 'var(--primary)', fontSize: '1.8rem', fontWeight: 'bold' }}>${property.price}</p>
+                            <p className="property-price" style={{ color: 'var(--primary)', fontSize: '1.8rem', fontWeight: 'bold' }}>${property.price}</p>
                         </div>
                         <div style={{ textAlign: 'center' }}>
                             <h3 style={{ color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Área Construida</h3>
@@ -176,7 +176,7 @@ export default async function PropertyPage({ params }) {
                         {property.gallery.map((url, index) => {
                             if (url.endsWith('.mp4') || url.endsWith('.mov')) {
                                 return (
-                                    <video key={index} src={url} controls style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
+                                    <video key={index} src={url} preload="none" controls style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
                                 );
                             }
                             return (

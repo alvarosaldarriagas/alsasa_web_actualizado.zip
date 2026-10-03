@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PropertyCard({ id, title, location, price, beds, baths, area, image, action }) {
     return (
-        <Link href={`/propiedad/${id}`} style={{ textDecoration: 'none' }}>
+        <Link href={`/propiedad/${id}`} prefetch={false} style={{ textDecoration: 'none' }}>
             <div style={styles.card}>
-                <div style={{ ...styles.imagePlaceholder, backgroundImage: image ? `url(${image})` : 'none', position: 'relative' }}>
+                <div style={{ ...styles.imagePlaceholder, position: 'relative' }}>
+                    {image && <Image src={image} alt={title} fill loading="lazy" sizes="(max-width: 768px) calc(100vw - 48px), (max-width: 1100px) 45vw, 380px" style={{ objectFit: 'cover' }} />}
                     {!image && <span style={styles.noImageText}>🏠 Imagen No Disponible</span>}
                     {action && action !== 'Consultar' && (
                         <div style={styles.badge}>{action}</div>
@@ -21,7 +23,7 @@ export default function PropertyCard({ id, title, location, price, beds, baths, 
                         <div style={styles.feature}><span>📐</span> {area} m²</div>
                     </div>
 
-                    <button style={styles.button}>Ver Detalles</button>
+                    <span style={{ ...styles.button, display: 'block', textAlign: 'center' }}>Ver Detalles</span>
                 </div>
             </div>
         </Link>
