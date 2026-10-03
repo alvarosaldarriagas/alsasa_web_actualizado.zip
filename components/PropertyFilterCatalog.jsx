@@ -9,10 +9,11 @@ export default function PropertyFilterCatalog({ properties }) {
     const [minBeds, setMinBeds] = useState('all');
 
     const filteredProperties = useMemo(() => {
+        const query = searchTerm.trim().toLowerCase();
         return properties.filter(prop => {
-            // Filtro por búsqueda de texto (zona, título)
-            const matchesSearch = prop.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                  prop.location.toLowerCase().includes(searchTerm.toLowerCase());
+            // Buscar también por el código comercial que identifica la propiedad.
+            const matchesSearch = [prop.id, prop.title, prop.location]
+                .some(value => String(value ?? '').toLowerCase().includes(query));
             
             // Filtro por número mínimo de habitaciones
             let matchesBeds = true;
@@ -50,7 +51,8 @@ export default function PropertyFilterCatalog({ properties }) {
             }}>
                 <input 
                     type="text" 
-                    placeholder="Buscar por zona o título..." 
+                    placeholder="Buscar por código, zona o título..."
+                    aria-label="Buscar propiedades por código, zona o título" 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{ padding: '0.8rem 1.2rem', borderRadius: '8px', border: '1px solid #e2e8f0', minWidth: '250px', flex: '1', fontSize: '1rem', outline: 'none' }}
