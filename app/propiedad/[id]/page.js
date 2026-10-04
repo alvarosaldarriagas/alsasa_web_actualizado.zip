@@ -113,19 +113,19 @@ export default async function PropertyPage({ params }) {
                 <div>
                     <div className="responsive-grid two-cols-even property-stats-grid" style={{ gap: '1rem', marginBottom: '3rem', padding: '2rem', backgroundColor: 'var(--surface)', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
                         <div className="property-price-stat" style={{ textAlign: 'center' }}>
-                            <h3 style={{ color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Precio Base</h3>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 600, lineHeight: 1.2, color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Precio Base</p>
                             <p className="property-price" style={{ color: 'var(--primary)', fontSize: '1.8rem', fontWeight: 'bold' }}>${property.price}</p>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                            <h3 style={{ color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Área Construida</h3>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 600, lineHeight: 1.2, color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Área Construida</p>
                             <p style={{ color: 'var(--text)', fontSize: '1.8rem', fontWeight: 'bold' }}>{property.area} m²</p>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                            <h3 style={{ color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Habitaciones</h3>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 600, lineHeight: 1.2, color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Habitaciones</p>
                             <p style={{ color: 'var(--text)', fontSize: '1.8rem', fontWeight: 'bold' }}>{property.beds}</p>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                            <h3 style={{ color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Baños</h3>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 600, lineHeight: 1.2, color: 'var(--text-light)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Baños</p>
                             <p style={{ color: 'var(--text)', fontSize: '1.8rem', fontWeight: 'bold' }}>{property.baths}</p>
                         </div>
                     </div>
@@ -140,7 +140,7 @@ export default async function PropertyPage({ params }) {
                 {/* Lado Derecho: Formulario de Contacto */}
                 <div style={{ marginTop: '2rem' }}>
                     <div style={{ backgroundColor: 'var(--primary)', padding: '2.5rem 2rem', borderRadius: '12px', boxShadow: '0 20px 40px rgba(13, 71, 161, 0.15)', position: 'sticky', top: '5rem', color: 'white' }}>
-                        <h3 style={{ fontSize: '1.6rem', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)' }}>¿Te interesa esta propiedad?</h3>
+                        <h2 style={{ color: 'white', fontSize: '1.6rem', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)' }}>¿Te interesa esta propiedad?</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', fontSize: '0.95rem' }}>Deja tus datos y un agente especialista de Alsasa te contactará al instante.</p>
 
                         <form action="/api/leads" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
