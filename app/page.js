@@ -87,7 +87,7 @@ export default async function Home() {
               </button>
               
               <div style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--text-light)', fontSize: '0.9rem' }}>
-                  O háblanos directamente por <a href="https://wa.me/573134321523?text=Hola%20equipo%20Alsasa,%20necesito%20asesor%C3%ADa." target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold', textDecoration: 'none' }}>WhatsApp</a>
+                  O háblanos directamente por <a href="https://wa.me/573134321523?text=Hola%20equipo%20Alsasa,%20necesito%20asesor%C3%ADa." target="_blank" rel="noopener noreferrer" style={{ color: '#146C36', fontWeight: 'bold', textDecoration: 'underline' }}>WhatsApp</a>
               </div>
           </form>
         </div>
