@@ -199,10 +199,10 @@ ${captureConsent ? 'El visitante marcó la casilla de autorización para guardar
         ];
 
         const payload = {
-            model: 'gpt-4o-mini',
+            model: 'gpt-6-sol',
+            reasoning_effort: 'none', // Required for function calling with GPT-6 Sol on Chat Completions.
             messages: [systemPrompt, ...messages],
-            temperature: 0.7,
-            max_tokens: 500,
+            max_completion_tokens: 500,
             tools,
             tool_choice: 'auto'
         };
