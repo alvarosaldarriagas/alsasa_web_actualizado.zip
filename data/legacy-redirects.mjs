@@ -339,5 +339,25 @@ export default [
     "source": "/propiedad/casa-prado-centro",
     "destination": "/propiedad/A1069",
     "permanent": true
+  },
+  {
+    "source": "/propiedad/23772",
+    "destination": "/propiedad/A1104",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/24076",
+    "destination": "/propiedad/A1115",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/24106",
+    "destination": "/propiedad/A1117",
+    "permanent": true
+  },
+  {
+    "source": "/propiedad/24372",
+    "destination": "/propiedad/A1132",
+    "permanent": true
   }
 ];
