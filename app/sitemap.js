@@ -23,6 +23,9 @@ export default async function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/administracion-de-arriendos-medellin`,
+    },
   ];
 
   // Rutas dinámicas de propiedades

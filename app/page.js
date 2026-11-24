@@ -42,6 +42,11 @@ export default async function Home() {
         }}>
           Explorar Propiedades
         </a>
+        <p style={{ marginTop: '1.25rem' }}>
+          <a href="/administracion-de-arriendos-medellin" style={{ color: 'var(--primary)', textDecoration: 'underline', fontWeight: 'bold' }}>
+            Administración de arriendos para propietarios
+          </a>
+        </p>
       </section>
 
       <section id="propiedades" className="home-catalog" style={{ padding: '5rem 4rem', backgroundColor: 'var(--surface)' }}>
